@@ -17,9 +17,7 @@ import { Router } from "./routes/router"
 
 export const App = () => (
     <ChakraProvider theme={theme} >
-        <Navbar />
-        <Box p={4}>
-            <Router />
-        </Box>
+        {/* <Navbar /> */}
+        <Router />
     </ChakraProvider>
 )

@@ -3,22 +3,8 @@ import {
     Box,
     Text,
     Flex,
-    Avatar,
-    HStack,
-    Link,
-    IconButton,
-    Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuDivider,
-    useDisclosure,
     useColorModeValue,
-    useBreakpointValue,
-    Stack,
     Textarea,
-    Input
 } from '@chakra-ui/react';
 
 export default function Home() {
@@ -45,18 +31,18 @@ export default function Home() {
         let chatArea = document.getElementById('chatArea');
         chatArea?.scrollBy(0, chatArea?.scrollHeight)
     }, [userChatList, systemChatList])
-    
+
     async function delay(ms: number) {
-        return new Promise( resolve => setTimeout(resolve, ms) );
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
+
     function sendMessage(e: any) {
         if (!e.shiftKey && e.key == "Enter") {
             e.preventDefault();
-            if(userText.replace(/\s/g, '').length){
+            if (userText.replace(/\s/g, '').length) {
                 setDescriptionFlag("none");
                 let temp: any[] = [...userChatList];
-                temp.push({'role': 'user', 'content': userText});
+                temp.push({ 'role': 'user', 'content': userText });
                 setUserChatList(temp);
                 setUserText("");
                 setTextAreaPos('0');
@@ -66,9 +52,9 @@ export default function Home() {
                 delay(0).then(() => {
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
-                    delay(30).then(()=> {
+                    delay(30).then(() => {
                         let temp: any[] = [...systemChatList];
-                        temp.push({'role': 'system', 'content': 'system'})
+                        temp.push({ 'role': 'system', 'content': 'system' })
                         setSystemChatList(temp)
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
@@ -78,82 +64,108 @@ export default function Home() {
             }
         }
     }
-    
+
     return (
-    <>
-        <Box>
-            <Box display={descriptionFlag} mt={250}>
-                <Flex fontSize={{base: 16, md: 24}} align={'center'} justify={'center'}>
-                    <Text>~音声学習 for ChatGPT~</Text>
-                </Flex>
-                <Flex justify={'center'}>
-                    <Text fontSize={{base: 20, md: 32}} align={'center'}>耳で学ぼう、音声チャット、音声学習ができる</Text>
-                </Flex>
-            </Box>
-            <Box 
-                alignItems={'center'} 
-                pos={'fixed'} 
-                top={70} 
-                bottom={100} 
-                right={5} 
-                left={5} 
-                overflowY={"auto"} 
-                id='chatArea' 
-                css={{
-                    '&::-webkit-scrollbar': {
-                        width: '4px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        width: '6px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        background: "#56c9c7",
-                        borderRadius: '24px',
-                    },
-                }}
-            >
-                {userChatList.map((chat, i) => {
-                    // if (chat.role == 'user'){
+        <>
+            <Box>
+                <Box display={descriptionFlag} mt={250}>
+                    <Flex fontSize={{ base: 16, md: 24 }} align={'center'} justify={'center'}>
+                        <Text>~音声学習 for ChatGPT~</Text>
+                    </Flex>
+                    <Flex justify={'center'}>
+                        <Text 
+                            fontSize={{ base: 20, md: 32 }} 
+                            align={'center'}
+                        >
+                            耳で学ぼう、音声チャット、音声学習ができる
+                        </Text>
+                    </Flex>
+                </Box>
+                <Box
+                    alignItems={'center'}
+                    pos={'fixed'}
+                    // height={"50%"}
+                    // width={"80%"}
+                    left={{ base: 3, md: 250 }}
+                    top={100}
+                    right={3}
+                    bottom={100}
+                    overflowY={"auto"}
+                    id='chatArea'
+                    css={{
+                        '&::-webkit-scrollbar': {
+                            width: '4px',
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            width: '6px',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            background: "#56c9c7",
+                            borderRadius: '24px',
+                        },
+                    }}
+                >
+                    {userChatList.map((chat, i) => {
+                        // if (chat.role == 'user'){
                         return (
                             <Box key={i}>
                                 <Flex justify={'right'}>
-                                    <Text p={2} m={1} borderRadius={5} justifySelf={'end'} bg={userChatBgColor}>{chat.content}</Text>
+                                    <Text 
+                                        p={2} 
+                                        m={1} 
+                                        borderRadius={5} 
+                                        justifySelf={'end'} 
+                                        bg={userChatBgColor}
+                                    >
+                                        {chat.content}
+                                    </Text>
                                 </Flex>
                                 {
-                                systemChatList[i] &&
+                                    systemChatList[i] &&
                                     <>
                                         <Flex justify={'left'}>
-                                            <Text p={2} m={1} borderRadius={5} justifySelf={'end'} bg={systemChatBgColor}>{systemChatList[i].content}</Text>
+                                            <Text 
+                                                p={2} 
+                                                m={1} 
+                                                borderRadius={5} 
+                                                justifySelf={'end'} 
+                                                bg={systemChatBgColor}
+                                            >
+                                                {systemChatList[i].content}
+                                            </Text>
                                         </Flex>
                                         <Flex justify={'left'}>
-                                            <audio controls style={{height: '35px'}} autoPlay>
-                                                <source src="s.mp3" type="audio/mp3"/>
+                                            <audio controls style={{ height: '35px' }} autoPlay>
+                                                <source src="s.mp3" type="audio/mp3" />
                                             </audio>
                                         </Flex>
                                     </>
                                 }
                             </Box>
                         )
-                })}
-            </Box>
-            <Flex justify={'center'}>
-                <Textarea 
-                    mt={5} 
-                    mb={1}
-                    width={"80%"}
+                    })}
+                </Box>
+                <Flex justify={'center'}
                     pos={'fixed'}
+                    left={{ base: 3, md: 250 }}
+                    right={3}
                     bottom={textAreaPos}
-                    placeholder={loading} 
-                    onKeyDown={(e) => {sendMessage(e)}}
-                    value={userText}
-                    onChange={(e) => {setUserText(e.target.value)}}
-                    isDisabled={disableFlag}
-                    ref={textAreaRef as React.RefObject<HTMLTextAreaElement>}
                 >
-                </Textarea>
-            </Flex>
-        </Box>
-    </>
+                    <Textarea
+                        mt={5}
+                        mb={1.5}
+                        // width={"80%"}
+                        placeholder={loading}
+                        onKeyDown={(e) => { sendMessage(e) }}
+                        value={userText}
+                        onChange={(e) => { setUserText(e.target.value) }}
+                        isDisabled={disableFlag}
+                        ref={textAreaRef as React.RefObject<HTMLTextAreaElement>}
+                    >
+                    </Textarea>
+                </Flex>
+            </Box>
+        </>
     )
 }
 
