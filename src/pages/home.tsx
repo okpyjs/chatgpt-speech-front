@@ -6,6 +6,8 @@ import {
     useColorModeValue,
     Textarea,
 } from '@chakra-ui/react';
+import axios from 'axios';
+
 
 export default function Home() {
     interface chatInterface {
@@ -15,6 +17,7 @@ export default function Home() {
     const textAreaRef = useRef<HTMLTextAreaElement>();
     const userChatBgColor = useColorModeValue("gray.500", "gray.500");
     const systemChatBgColor = useColorModeValue("gray.100", "gray.700");
+    const [audioPath, setAudioPath] = useState<string[]>([]);
     const [descriptionFlag, setDescriptionFlag] = useState("block");
     const [userChatList, setUserChatList] = useState<chatInterface[]>([]);
     const [systemChatList, setSystemChatList] = useState<chatInterface[]>([]);
@@ -49,12 +52,37 @@ export default function Home() {
                 setDisableFlag(true);
                 setLoading('文章作成中...');
                 // after receiving data
-                delay(0).then(() => {
+                axios.post(
+                    `${process.env.REACT_APP_API_URL}/api/chat/`,
+                    {message: textAreaRef.current?.value, audio_model: 'Nanami'}
+                ).then((resp) => {
+                    console.log(resp.data)
+                    setDisableFlag(false);
+                    setLoading('メッセージを入力してください');
+                    let temp: any[] = [...systemChatList];
+                    temp.push({ 'role': 'system', 'content': resp.data['message']})
+                    setSystemChatList(temp)
+                    axios.get(
+                        `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}/`,
+                    ).then((resp) => {
+                        console.log(resp)
+                    })
+                    delay(30).then(() => {
+                        // let audioTemp: any[] = [...audioPath];
+                        // audioTemp.push(resp.data["audioToken"])
+                        // setAudioPath(audioTemp)
+                        if (textAreaRef.current) {
+                            textAreaRef.current.focus();
+                        }
+                    })
+                })
+                .catch((error) => {
+                    console.log(error)
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
                     delay(30).then(() => {
                         let temp: any[] = [...systemChatList];
-                        temp.push({ 'role': 'system', 'content': 'system' })
+                        temp.push({ 'role': 'system', 'content': '現在のGPTモデルはご利用いただけません。' })
                         setSystemChatList(temp)
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
@@ -73,8 +101,8 @@ export default function Home() {
                         <Text>~音声学習 for ChatGPT~</Text>
                     </Flex>
                     <Flex justify={'center'}>
-                        <Text 
-                            fontSize={{ base: 20, md: 32 }} 
+                        <Text
+                            fontSize={{ base: 20, md: 32 }}
                             align={'center'}
                         >
                             耳で学ぼう、音声チャット、音声学習ができる
@@ -110,11 +138,11 @@ export default function Home() {
                         return (
                             <Box key={i}>
                                 <Flex justify={'right'}>
-                                    <Text 
-                                        p={2} 
-                                        m={1} 
-                                        borderRadius={5} 
-                                        justifySelf={'end'} 
+                                    <Text
+                                        p={2}
+                                        m={1}
+                                        borderRadius={5}
+                                        justifySelf={'end'}
                                         bg={userChatBgColor}
                                     >
                                         {chat.content}
@@ -124,11 +152,11 @@ export default function Home() {
                                     systemChatList[i] &&
                                     <>
                                         <Flex justify={'left'}>
-                                            <Text 
-                                                p={2} 
-                                                m={1} 
-                                                borderRadius={5} 
-                                                justifySelf={'end'} 
+                                            <Text
+                                                p={2}
+                                                m={1}
+                                                borderRadius={5}
+                                                justifySelf={'end'}
                                                 bg={systemChatBgColor}
                                             >
                                                 {systemChatList[i].content}
@@ -136,7 +164,7 @@ export default function Home() {
                                         </Flex>
                                         <Flex justify={'left'}>
                                             <audio controls style={{ height: '35px' }} autoPlay>
-                                                <source src="s.mp3" type="audio/mp3" />
+                                                <source src={audioPath[i]} type="audio/mp3" />
                                             </audio>
                                         </Flex>
                                     </>
