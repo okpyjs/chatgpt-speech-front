@@ -34,6 +34,7 @@ import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { FaLanguage, FaSchool, FaCertificate } from 'react-icons/fa';
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
+import Mode from '../pages/home/mode';
 
 interface LinkItemProps {
     name: string;
@@ -47,16 +48,21 @@ const LinkItems: Array<LinkItemProps> = [
     { name: '資格', icon: FaCertificate },
 ];
 
-export default function SidebarWithHeader({
-    children,
-}: {
-    children: ReactNode;
-}) {
+export default function SidebarWithHeader(
+    {
+        children,
+        name,
+    }: {
+        children: ReactNode;
+        name: string;
+    }
+) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
             <SidebarContent
                 onClose={() => onClose}
+                name={name}
                 display={{ base: 'none', md: 'block' }}
             />
             <Drawer
@@ -68,7 +74,7 @@ export default function SidebarWithHeader({
                 onOverlayClick={onClose}
                 size="full">
                 <DrawerContent>
-                    <SidebarContent onClose={onClose} />
+                    <SidebarContent onClose={onClose} name={name}/>
                 </DrawerContent>
             </Drawer>
             {/* mobilenav */}
@@ -82,9 +88,10 @@ export default function SidebarWithHeader({
 
 interface SidebarProps extends BoxProps {
     onClose: () => void;
+    name: string;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
     return (
         <Box
             transition="3s ease"
@@ -106,24 +113,12 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                     {link.name}
                 </NavItem>
             ))}
-            <Flex pos={'absolute'} bottom={0} >
-            <Menu>
-                <MenuButton as={Button} colorScheme='pink'>
-                    Profile
-                </MenuButton>
-                <MenuList>
-                    <MenuGroup title='Profile'>
-                    <MenuItem>My Account</MenuItem>
-                    <MenuItem>Payments </MenuItem>
-                    </MenuGroup>
-                    <MenuDivider />
-                    <MenuGroup title='Help'>
-                    <MenuItem>Docs</MenuItem>
-                    <MenuItem>FAQ</MenuItem>
-                    </MenuGroup>
-                </MenuList>
-                </Menu>
-            </Flex>
+            {name == "home" &&
+                <Flex pos={'absolute'} bottom={2}>
+                    <Mode category='chat'></Mode>
+                    <Mode category='audio'></Mode>
+                </Flex>
+            }
         </Box>
     );
 };

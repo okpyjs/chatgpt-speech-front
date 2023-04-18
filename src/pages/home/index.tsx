@@ -7,7 +7,8 @@ import {
     Textarea,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import ReduxTest from './reduxTest';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../redux/store";
 
 export default function Home() {
     interface chatInterface {
@@ -18,6 +19,8 @@ export default function Home() {
         status: boolean;
         token: string;
     }
+    const audioModel = useSelector((state: RootState) => state.audioMode.value)
+    const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
     const textAreaRef = useRef<HTMLTextAreaElement>();
     const userChatBgColor = useColorModeValue("gray.500", "gray.500");
     const systemChatBgColor = useColorModeValue("gray.100", "gray.700");
@@ -30,8 +33,8 @@ export default function Home() {
     const [textAreaPos, setTextAreaPos] = useState('auto');
     const [loading, setLoading] = useState('メッセージを入力してください');
     const [chatDeep, setChatDeep] = useState<number>(3);
-    const [audioModel, setAudioModel] = useState<string>('Nanami');
-    const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
+    // const [audioModel, setAudioModel] = useState<string>('Nanami');
+    // const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
     useEffect(() => {
         textAreaRef.current?.focus()
@@ -200,7 +203,6 @@ export default function Home() {
                         ref={textAreaRef as React.RefObject<HTMLTextAreaElement>}
                     >
                     </Textarea>
-                    <ReduxTest></ReduxTest>
                 </Flex>
             </Box>
         </>
