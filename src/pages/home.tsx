@@ -14,10 +14,14 @@ export default function Home() {
         role: string;
         content: string;
     }
+    interface audioInterface {
+        status: boolean;
+        byte: string;
+    }
     const textAreaRef = useRef<HTMLTextAreaElement>();
     const userChatBgColor = useColorModeValue("gray.500", "gray.500");
     const systemChatBgColor = useColorModeValue("gray.100", "gray.700");
-    const [audioPath, setAudioPath] = useState<string[]>([]);
+    const [audioPath, setAudioPath] = useState<audioInterface[]>([]);
     const [descriptionFlag, setDescriptionFlag] = useState("block");
     const [userChatList, setUserChatList] = useState<chatInterface[]>([]);
     const [systemChatList, setSystemChatList] = useState<chatInterface[]>([]);
@@ -62,15 +66,21 @@ export default function Home() {
                     let temp: any[] = [...systemChatList];
                     temp.push({ 'role': 'system', 'content': resp.data['message']})
                     setSystemChatList(temp)
+                    // let audioTemp: audioInterface[] = [...audioPath];
+                    // audioTemp.push({status: false, byte: resp.data["audioToken"]})
+                    // setAudioPath(audioTemp)
                     axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}/`,
+                        `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}`,
                     ).then((resp) => {
-                        console.log(resp)
+                        // console.log(resp.data['byte'])
+                        let audioTemp1: audioInterface[] = [...audioPath];
+                        audioTemp1.push({status: true, byte: resp.data["audioToken"]})
+                        // audioTemp1[audioTemp1.length-1].byte = resp.data['byte']
+                        console.log(resp.data['byte'])
+                        setAudioPath(audioTemp1)
+                        // console.log(audioPath)
                     })
                     delay(30).then(() => {
-                        // let audioTemp: any[] = [...audioPath];
-                        // audioTemp.push(resp.data["audioToken"])
-                        // setAudioPath(audioTemp)
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
                         }
@@ -163,9 +173,12 @@ export default function Home() {
                                             </Text>
                                         </Flex>
                                         <Flex justify={'left'}>
-                                            <audio controls style={{ height: '35px' }} autoPlay>
-                                                <source src={audioPath[i]} type="audio/mp3" />
-                                            </audio>
+                                            {
+                                            audioPath[i] && audioPath[i].status &&
+                                                <audio controls style={{ height: '35px' }} autoPlay>
+                                                    <source src={`data:audio/mp3;base64,${audioPath[i].byte}`} type="audio/mp3" />
+                                                </audio>
+                                            }
                                         </Flex>
                                     </>
                                 }
