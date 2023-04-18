@@ -8,7 +8,6 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 
-
 export default function Home() {
     interface chatInterface {
         role: string;
@@ -16,7 +15,7 @@ export default function Home() {
     }
     interface audioInterface {
         status: boolean;
-        byte: string;
+        token: string;
     }
     const textAreaRef = useRef<HTMLTextAreaElement>();
     const userChatBgColor = useColorModeValue("gray.500", "gray.500");
@@ -66,20 +65,20 @@ export default function Home() {
                     let temp: any[] = [...systemChatList];
                     temp.push({ 'role': 'system', 'content': resp.data['message']})
                     setSystemChatList(temp)
-                    // let audioTemp: audioInterface[] = [...audioPath];
-                    // audioTemp.push({status: false, byte: resp.data["audioToken"]})
-                    // setAudioPath(audioTemp)
-                    axios.get(
-                        `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}`,
-                    ).then((resp) => {
-                        // console.log(resp.data['byte'])
-                        let audioTemp1: audioInterface[] = [...audioPath];
-                        audioTemp1.push({status: true, byte: resp.data["audioToken"]})
-                        // audioTemp1[audioTemp1.length-1].byte = resp.data['byte']
-                        console.log(resp.data['byte'])
-                        setAudioPath(audioTemp1)
-                        // console.log(audioPath)
-                    })
+                    let audioTemp: audioInterface[] = [...audioPath];
+                    audioTemp.push({status: false, token: resp.data["audioToken"]})
+                    setAudioPath(audioTemp)
+                    // axios.get(
+                    //     `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}`,
+                    // ).then((resp) => {
+                    //     // console.log(resp.data['byte'])
+                    //     let audioTemp1: audioInterface[] = [...audioPath];
+                    //     audioTemp1.push({status: true, byte: resp.data["byte"]})
+                    //     // audioTemp1[audioTemp1.length-1].byte = resp.data['byte']
+                    //     console.log(audioTemp1)
+                    //     setAudioPath(audioTemp1)
+                    //     // console.log(audioPath)
+                    // })
                     delay(30).then(() => {
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
@@ -173,15 +172,25 @@ export default function Home() {
                                             </Text>
                                         </Flex>
                                         <Flex justify={'left'}>
-                                            {
-                                            audioPath[i] && audioPath[i].status &&
-                                                <audio controls style={{ height: '35px' }} autoPlay>
-                                                    <source src={`data:audio/mp3;base64,${audioPath[i].byte}`} type="audio/mp3" />
-                                                </audio>
-                                            }
+                                            <audio controls style={{ height: '35px' }} autoPlay>
+                                                <source src={`${process.env.REACT_APP_API_URL}/api/audio?token=${audioPath[i].token}`} type="audio/mp3" />
+                                            </audio>
                                         </Flex>
                                     </>
                                 }
+                                {/* {
+                                    audioPath[i] &&
+                                    <Flex justify={'left'}>
+                                        <AudioPlayer byteCodeString={audioPath[i].byte}/>
+                                        {
+                                        audioPath[i] && audioPath[i].status &&
+                                            <audio controls style={{ height: '35px' }} autoPlay>
+                                                <source src={`data:audio/mp3;base64,${btoa(String.fromCharCode())}`} type="audio/mp3" />
+                                            </audio>
+                                        }
+                                    </Flex>
+                                } */}
+
                             </Box>
                         )
                     })}
