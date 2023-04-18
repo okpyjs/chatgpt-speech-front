@@ -28,6 +28,8 @@ export default function Home() {
     const [disableFlag, setDisableFlag] = useState(false);
     const [textAreaPos, setTextAreaPos] = useState('auto');
     const [loading, setLoading] = useState('メッセージを入力してください');
+    const [chatDeep, setChatDeep] = useState<number>(3);
+    const [audioModel, setAudioModel] = useState<string>('Nanami');
 
     useEffect(() => {
         textAreaRef.current?.focus()
@@ -55,9 +57,15 @@ export default function Home() {
                 setDisableFlag(true);
                 setLoading('文章作成中...');
                 // after receiving data
+                let data = {
+                    user_message: JSON.stringify(temp.slice(0-chatDeep)), 
+                    system_message: JSON.stringify([...systemChatList].slice(0-chatDeep)), 
+                    audio_model: audioModel
+                }
+                console.log(data)
                 axios.post(
                     `${process.env.REACT_APP_API_URL}/api/chat/`,
-                    {message: textAreaRef.current?.value, audio_model: 'Nanami'}
+                    data
                 ).then((resp) => {
                     console.log(resp.data)
                     setDisableFlag(false);
@@ -68,17 +76,6 @@ export default function Home() {
                     let audioTemp: audioInterface[] = [...audioPath];
                     audioTemp.push({status: false, token: resp.data["audioToken"]})
                     setAudioPath(audioTemp)
-                    // axios.get(
-                    //     `${process.env.REACT_APP_API_URL}/api/audio?token=${resp.data['audioToken']}`,
-                    // ).then((resp) => {
-                    //     // console.log(resp.data['byte'])
-                    //     let audioTemp1: audioInterface[] = [...audioPath];
-                    //     audioTemp1.push({status: true, byte: resp.data["byte"]})
-                    //     // audioTemp1[audioTemp1.length-1].byte = resp.data['byte']
-                    //     console.log(audioTemp1)
-                    //     setAudioPath(audioTemp1)
-                    //     // console.log(audioPath)
-                    // })
                     delay(30).then(() => {
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
@@ -178,19 +175,6 @@ export default function Home() {
                                         </Flex>
                                     </>
                                 }
-                                {/* {
-                                    audioPath[i] &&
-                                    <Flex justify={'left'}>
-                                        <AudioPlayer byteCodeString={audioPath[i].byte}/>
-                                        {
-                                        audioPath[i] && audioPath[i].status &&
-                                            <audio controls style={{ height: '35px' }} autoPlay>
-                                                <source src={`data:audio/mp3;base64,${btoa(String.fromCharCode())}`} type="audio/mp3" />
-                                            </audio>
-                                        }
-                                    </Flex>
-                                } */}
-
                             </Box>
                         )
                     })}
