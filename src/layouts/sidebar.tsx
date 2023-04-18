@@ -18,6 +18,8 @@ import {
     FlexProps,
     Menu,
     MenuButton,
+    MenuGroup,
+    Button,
     MenuDivider,
     MenuItem,
     MenuList,
@@ -104,6 +106,24 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                     {link.name}
                 </NavItem>
             ))}
+            <Flex pos={'absolute'} bottom={0} >
+            <Menu>
+                <MenuButton as={Button} colorScheme='pink'>
+                    Profile
+                </MenuButton>
+                <MenuList>
+                    <MenuGroup title='Profile'>
+                    <MenuItem>My Account</MenuItem>
+                    <MenuItem>Payments </MenuItem>
+                    </MenuGroup>
+                    <MenuDivider />
+                    <MenuGroup title='Help'>
+                    <MenuItem>Docs</MenuItem>
+                    <MenuItem>FAQ</MenuItem>
+                    </MenuGroup>
+                </MenuList>
+                </Menu>
+            </Flex>
         </Box>
     );
 };

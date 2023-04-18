@@ -7,6 +7,7 @@ import {
     Textarea,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import ReduxTest from './reduxTest';
 
 export default function Home() {
     interface chatInterface {
@@ -30,6 +31,7 @@ export default function Home() {
     const [loading, setLoading] = useState('メッセージを入力してください');
     const [chatDeep, setChatDeep] = useState<number>(3);
     const [audioModel, setAudioModel] = useState<string>('Nanami');
+    const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
     useEffect(() => {
         textAreaRef.current?.focus()
@@ -60,7 +62,8 @@ export default function Home() {
                 let data = {
                     user_message: JSON.stringify(temp.slice(0-chatDeep)), 
                     system_message: JSON.stringify([...systemChatList].slice(0-chatDeep)), 
-                    audio_model: audioModel
+                    audio_model: audioModel,
+                    chat_model: chatModel
                 }
                 console.log(data)
                 axios.post(
@@ -197,6 +200,7 @@ export default function Home() {
                         ref={textAreaRef as React.RefObject<HTMLTextAreaElement>}
                     >
                     </Textarea>
+                    <ReduxTest></ReduxTest>
                 </Flex>
             </Box>
         </>
