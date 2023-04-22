@@ -7,8 +7,9 @@ import {
     Textarea,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
     interface chatInterface {
@@ -19,6 +20,7 @@ export default function Home() {
         status: boolean;
         token: string;
     }
+    const navigate = useNavigate();
     const audioModel = useSelector((state: RootState) => state.audioMode.value)
     const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
     const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -51,6 +53,9 @@ export default function Home() {
 
     function sendMessage(e: any) {
         if (!e.shiftKey && e.key == "Enter") {
+            if(localStorage.getItem('token') === null){
+                navigate('/login');
+            }
             e.preventDefault();
             if (userText.replace(/\s/g, '').length) {
                 setDescriptionFlag("none");
@@ -90,8 +95,12 @@ export default function Home() {
                 })
                 .catch((error) => {
                     console.log(error)
+                    navigate('/login');
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
+                    let audioTemp: audioInterface[] = [...audioPath];
+                    audioTemp.push({status: false, token: "error"})
+                    setAudioPath(audioTemp)
                     delay(30).then(() => {
                         let temp: any[] = [...systemChatList];
                         temp.push({ 'role': 'system', 'content': '現在のGPTモデルはご利用いただけません。' })

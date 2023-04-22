@@ -18,8 +18,58 @@ import { Logo } from './Logo'
 import OAuthButtonGroup from './OAuthButtonGroup'
 import { PasswordField } from './PasswordField'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login({name}: {name: string}) {
+    
+    const navigate = useNavigate()
+
+    const submitLogin = () => {
+        let email = (document.getElementById("email") as HTMLInputElement).value;
+        let password = (document.getElementById("password") as HTMLInputElement).value;
+        console.log(email, password)
+        axios.post(
+            `${process.env.REACT_APP_API_URL}/api/token/`,
+            {
+                username: email,
+                password: password
+            }
+        ).then((resp) => {
+            // let data = JSON.parse(resp.data)
+            console.log(resp, resp.data)
+            localStorage.setItem("token", resp.data.access);
+            navigate("/home");
+            console.log(resp);
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+    const submitSignup = () => {
+        
+        let email = (document.getElementById("email") as HTMLInputElement).value;
+        let password = (document.getElementById("password") as HTMLInputElement).value;
+        let repassword = (document.getElementById("repassword") as HTMLInputElement).value;
+        console.log(email, password, repassword)
+        axios.post(
+            `${process.env.REACT_APP_API_URL}/api/token/`,
+            {
+                username: email,
+                password: password
+            }
+        ).then((resp) => {
+            // let data = JSON.parse(resp.data)
+            console.log(resp, resp.data)
+            localStorage.setItem("token", resp.data.access);
+            navigate("/home");
+            console.log(resp);
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+    
+    
     return(
     <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '0', sm: '8' }}>
         <Stack spacing="8">
@@ -79,9 +129,9 @@ export default function Login({name}: {name: string}) {
                     <Stack spacing="6">
                         {
                             name=="login"? (
-                                    <Button>ログイン</Button>
+                                    <Button onClick={() => {submitLogin()}}>ログイン</Button>
                                 ): (
-                                    <Button>サインアップ</Button>
+                                    <Button onClick={() => {submitSignup()}}>サインアップ</Button>
                                 )
                         }
                         <HStack>
@@ -97,4 +147,5 @@ export default function Login({name}: {name: string}) {
             </Box>
         </Stack>
     </Container>
-)}
+    )
+}

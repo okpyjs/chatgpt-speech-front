@@ -3,7 +3,7 @@ import {
     BrowserRouter,
     Routes,
     Route,
-    Link as RouteLink
+    Navigate,
 } from 'react-router-dom';
 
 import Home from "../pages/home"
@@ -15,6 +15,7 @@ export const Router = () => (
         <Routes>
             {/* <Route path="/" element={<Home />} /> */}
             <Route path="/" element={<SidebarWithHeader children={<Home />} name="home"/>}/>
+            <Route path="/home" element={<Navigate to={"/"}/>}/>
             <Route path="/login" element={<Login name="login"/>}></Route>
             <Route path="/signup" element={<Login name="signup"/>}></Route>
         </Routes>

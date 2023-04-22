@@ -51,7 +51,7 @@ export const PasswordField = forwardRef<HTMLInputElement, InputProps>((props, re
         </FormControl>
         {props.name=="signup" &&
         <FormControl>
-            <FormLabel htmlFor="password">パスワードをもう一度</FormLabel>
+            <FormLabel htmlFor="repassword">パスワードをもう一度</FormLabel>
             <InputGroup>
                 <Input
                     id="repassword"
