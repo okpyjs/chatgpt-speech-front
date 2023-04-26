@@ -11,8 +11,12 @@ import {
 } from '@chakra-ui/react'
 import { forwardRef, useRef } from 'react'
 import { HiEye, HiEyeOff } from 'react-icons/hi'
+ 
+interface CustomInputProps extends InputProps {
+    onEnter: (e: any, name?: string) => void;
+}
 
-export const PasswordField = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+export const PasswordField = forwardRef<HTMLInputElement, CustomInputProps>((props, ref) => {
     const { isOpen, onToggle } = useDisclosure()
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -46,6 +50,7 @@ export const PasswordField = forwardRef<HTMLInputElement, InputProps>((props, re
                     autoComplete="current-password"
                     required
                     {...props}
+                    onKeyDown={(e) => {props.onEnter(e, props.name)}}
                 />
             </InputGroup>
         </FormControl>
@@ -61,6 +66,7 @@ export const PasswordField = forwardRef<HTMLInputElement, InputProps>((props, re
                     // autoComplete="current-password"
                     required
                     {...props}
+                    onKeyDown={(e) => {props.onEnter(e, props.name)}}
                 />
             </InputGroup>
         </FormControl>

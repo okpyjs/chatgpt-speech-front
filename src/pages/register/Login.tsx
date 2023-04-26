@@ -19,13 +19,21 @@ import OAuthButtonGroup from './OAuthButtonGroup'
 import { PasswordField } from './PasswordField'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login({name}: {name: string}) {
     
     const navigate = useNavigate()
 
+    function handleEnter(e: any, name?: string) {
+        // e.preventDefault()
+        if(e.key == "Enter"){
+            if(name == "login") submitLogin();
+            else submitSignup();
+        }
+    };
+  
     const submitLogin = () => {
         let email = (document.getElementById("email") as HTMLInputElement).value;
         let password = (document.getElementById("password") as HTMLInputElement).value;
@@ -116,7 +124,7 @@ export default function Login({name}: {name: string}) {
                             <FormLabel htmlFor="email">メール</FormLabel>
                             <Input id="email" type="email" />
                         </FormControl>
-                        <PasswordField name = {name}/>
+                        <PasswordField name={name} onEnter={handleEnter}/>
                     </Stack>
                     {name == "login" &&
                         <HStack justify="space-between">
