@@ -35,6 +35,8 @@ import { ReactText } from 'react';
 import { FaLanguage, FaSchool, FaCertificate } from 'react-icons/fa';
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import Mode from '../pages/home/mode';
+import { useNavigate } from 'react-router-dom'
+
 
 interface LinkItemProps {
     name: string;
@@ -78,7 +80,7 @@ export default function SidebarWithHeader(
                 </DrawerContent>
             </Drawer>
             {/* mobilenav */}
-            <MobileNav onOpen={onOpen} />
+            <MobileNav onOpen={onOpen} name = {name}/>
             <Box ml={{ base: 0, md: 60 }} p="4">
                 {children}
             </Box>
@@ -92,6 +94,13 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
+    const navigate = useNavigate()
+
+    function signOut() {
+        localStorage.removeItem("token")
+        navigate("/login")
+    }
+
     return (
         <Box
             transition="3s ease"
@@ -113,12 +122,46 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                     {link.name}
                 </NavItem>
             ))}
-            {name == "home" &&
-                <Flex pos={'absolute'} bottom={2}>
-                    <Mode category='chat'></Mode>
-                    <Mode category='audio'></Mode>
-                </Flex>
-            }
+            <Flex alignItems={'center'} pos={'absolute'} bottom={2} left={5}>
+                <Menu>
+                    <MenuButton
+                        py={2}
+                        transition="all 0.3s"
+                        _focus={{ boxShadow: 'none' }}>
+                        <HStack>
+                            <Avatar
+                                size={'sm'}
+                                src={
+                                    'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                                }
+                            />
+                            <VStack
+                                display={{ base: 'none', md: 'flex' }}
+                                alignItems="flex-start"
+                                spacing="1px"
+                                ml="2">
+                                <Text fontSize="sm">白石雅之</Text>
+                                <Text fontSize="xs" color="gray.600">
+                                    管理者
+                                </Text>
+                            </VStack>
+                            <Box display={{ base: 'none', md: 'flex' }}>
+                                <FiChevronDown />
+                            </Box>
+                        </HStack>
+                    </MenuButton>
+                    <MenuList
+                        //   bg={useColorModeValue('white', 'gray.900')}
+                        //   borderColor={useColorModeValue('gray.200', 'gray.700')}
+                    >
+                        <MenuItem>プロフィール</MenuItem>
+                        <MenuItem>設定</MenuItem>
+                        <MenuItem>請求する</MenuItem>
+                        <MenuDivider />
+                        <MenuItem onClick={() => {signOut()}}>サインアウト</MenuItem>
+                    </MenuList>
+                </Menu>
+            </Flex>
         </Box>
     );
 };
@@ -160,9 +203,17 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
 
 interface MobileProps extends FlexProps {
     onOpen: () => void;
+    name: string;
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const MobileNav = ({onOpen, name, ...rest }: MobileProps) => {
     return (
+        <>
+        {name == "home" &&
+            <Box display={{ base: 'none', md: 'flex' }} pos={'absolute'} left={"40%"} top={5}>
+                <Mode category='chat'></Mode>
+                <Mode category='audio'></Mode>
+            </Box>
+        }
         <Flex
             ml={{ base: 0, md: 60 }}
             px={{ base: 4, md: 4 }}
@@ -188,7 +239,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 fontWeight="bold">
                 Parakeet
             </Text>
-
             <HStack spacing={{ base: '0', md: '3' }}>
                 <ColorModeSwitcher/>
                 <IconButton
@@ -197,47 +247,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                     aria-label="open menu"
                     icon={<FiBell />}
                 />
-                <Flex alignItems={'center'}>
-                    <Menu>
-                        <MenuButton
-                            py={2}
-                            transition="all 0.3s"
-                            _focus={{ boxShadow: 'none' }}>
-                            <HStack>
-                                <Avatar
-                                    size={'sm'}
-                                    src={
-                                        'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                                    }
-                                />
-                                <VStack
-                                    display={{ base: 'none', md: 'flex' }}
-                                    alignItems="flex-start"
-                                    spacing="1px"
-                                    ml="2">
-                                    <Text fontSize="sm">白石雅之</Text>
-                                    <Text fontSize="xs" color="gray.600">
-                                        管理者
-                                    </Text>
-                                </VStack>
-                                <Box display={{ base: 'none', md: 'flex' }}>
-                                    <FiChevronDown />
-                                </Box>
-                            </HStack>
-                        </MenuButton>
-                        <MenuList
-                            //   bg={useColorModeValue('white', 'gray.900')}
-                            //   borderColor={useColorModeValue('gray.200', 'gray.700')}
-                        >
-                            <MenuItem>プロフィール</MenuItem>
-                            <MenuItem>設定</MenuItem>
-                            <MenuItem>請求する</MenuItem>
-                            <MenuDivider />
-                            <MenuItem>サインアウト</MenuItem>
-                        </MenuList>
-                    </Menu>
-                </Flex>
             </HStack>
         </Flex>
+        </>
     );
 };

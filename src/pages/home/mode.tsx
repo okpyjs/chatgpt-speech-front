@@ -6,12 +6,17 @@ import {
     MenuGroup,
     MenuItem,
     MenuDivider,
+    Text,
     Box,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { setAudioMode } from "../../redux/audioModeSlice";
 import { setChatMode } from "../../redux/chatModeSlice";
+import styles from '../../assets/custom.module.css'
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
+
 
 interface ItemList {
     audio: string[],
@@ -42,6 +47,8 @@ const itemList: ItemList = {
 }
 
 const Mode = ({category}: {category: string}) => {
+    const audioModel = useSelector((state: RootState) => state.audioMode.value)
+    const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
     const categoryBtnBg = useColorModeValue("gray.500", "gray.500");
     const dispatch = useDispatch()
 
@@ -51,30 +58,34 @@ const Mode = ({category}: {category: string}) => {
     }
 
     return(
-    <Box ml={2.5}>
+    <Box mr={2}>
         <Menu>
-        <MenuButton as={Button} bg={categoryBtnBg} fontSize={12}>
-            {
-                category == 'chat' &&
-                    <>GPTモデル</>
+            <MenuButton as={Button} bg={categoryBtnBg} fontSize={12} mr={2} className={category=="audio" ? styles.mode: "none"}>
+                {
+                    category == 'chat' &&
+                        <>GPTモデル</>
+                }
+                {
+                    category == 'audio' &&
+                        <>スピーチモデル</>
+                }
+            </MenuButton>
+            <MenuList>
+                {/* <MenuGroup title='Profile'>
+                <MenuItem>My Account</MenuItem>
+                <MenuItem>Payments </MenuItem>
+                </MenuGroup>
+                <MenuDivider /> */}
+                {
+                    itemList[category as keyof ItemList].map((item, i) => {
+                        return <MenuItem key={i} onClick={() => {setMode(category, item)}}>{item}</MenuItem>
+                    })
+                }
+            </MenuList>
+            {category == "audio"?
+                <span className={category=="audio" ? styles.mode: "none"}>{audioModel}</span>:
+                <span>{chatModel}</span>
             }
-            {
-                category == 'audio' &&
-                    <>スピーチモデル</>
-            }
-        </MenuButton>
-        <MenuList>
-            {/* <MenuGroup title='Profile'>
-            <MenuItem>My Account</MenuItem>
-            <MenuItem>Payments </MenuItem>
-            </MenuGroup>
-            <MenuDivider /> */}
-            {
-                itemList[category as keyof ItemList].map((item, i) => {
-                    return <MenuItem key={i} onClick={() => {setMode(category, item)}}>{item}</MenuItem>
-                })
-            }
-        </MenuList>
         </Menu>
     </Box>
     )

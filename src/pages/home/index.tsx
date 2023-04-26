@@ -74,9 +74,17 @@ export default function Home() {
                     chat_model: chatModel
                 }
                 console.log(data)
+
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+                  
                 axios.post(
                     `${process.env.REACT_APP_API_URL}/api/chat/`,
-                    data
+                    data, {
+                        headers: headers
+                    }
                 ).then((resp) => {
                     console.log(resp.data)
                     setDisableFlag(false);
