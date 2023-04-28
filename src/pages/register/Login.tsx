@@ -39,15 +39,15 @@ export default function Login({name}: {name: string}) {
         let password = (document.getElementById("password") as HTMLInputElement).value;
         console.log(email, password)
         axios.post(
-            `${process.env.REACT_APP_API_URL}/api/token/`,
+            `${process.env.REACT_APP_API_URL}/customuser/login/`,
             {
-                username: email,
+                email: email,
                 password: password
             }
         ).then((resp) => {
             // let data = JSON.parse(resp.data)
             console.log(resp, resp.data)
-            localStorage.setItem("token", resp.data.access);
+            localStorage.setItem("token", resp.data.token);
             navigate("/home");
             console.log(resp);
         }).catch((error) => {
@@ -61,16 +61,16 @@ export default function Login({name}: {name: string}) {
         let repassword = (document.getElementById("repassword") as HTMLInputElement).value;
         console.log(email, password, repassword)
         axios.post(
-            `${process.env.REACT_APP_API_URL}/api/token/`,
+            `${process.env.REACT_APP_API_URL}/customuser/register/`,
             {
-                username: email,
+                email: email,
                 password: password
             }
         ).then((resp) => {
             // let data = JSON.parse(resp.data)
             console.log(resp, resp.data)
             localStorage.setItem("token", resp.data.access);
-            navigate("/home");
+            navigate("/login");
             console.log(resp);
         }).catch((error) => {
             console.log(error)
