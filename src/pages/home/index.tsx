@@ -5,11 +5,14 @@ import {
     Flex,
     useColorModeValue,
     Textarea,
+    Link,
+    Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
+import { FaEraser } from "react-icons/fa"
 
 export default function Home() {
     interface chatInterface {
@@ -35,6 +38,8 @@ export default function Home() {
     const [textAreaPos, setTextAreaPos] = useState('auto');
     const [loading, setLoading] = useState('メッセージを入力してください');
     const [chatDeep, setChatDeep] = useState<number>(3);
+    const [eraserOpacity, setEraserOpacity] = useState<string>("20%");
+    const [firstChatFlag, setFirstChatFlag] = useState<boolean>(true);
     // const [audioModel, setAudioModel] = useState<string>('Nanami');
     // const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
@@ -49,6 +54,13 @@ export default function Home() {
 
     async function delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function clear() {
+        setUserChatList([])
+        setSystemChatList([])
+        setFirstChatFlag(true)
+        setAudioPath([])
     }
 
     function sendMessage(e: any) {
@@ -71,7 +83,8 @@ export default function Home() {
                     user_message: JSON.stringify(temp.slice(0-chatDeep)), 
                     system_message: JSON.stringify([...systemChatList].slice(0-chatDeep)), 
                     audio_model: audioModel,
-                    chat_model: chatModel
+                    chat_model: chatModel,
+                    first_chat: firstChatFlag
                 }
                 console.log(data)
 
@@ -87,6 +100,7 @@ export default function Home() {
                     }
                 ).then((resp) => {
                     console.log(resp.data)
+                    setFirstChatFlag(false)
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
                     let temp: any[] = [...systemChatList];
@@ -102,8 +116,9 @@ export default function Home() {
                     })
                 })
                 .catch((error) => {
-                    console.log(error)
-                    navigate('/login');
+                    if(error.response.status == 401) {
+                        navigate('/login');
+                    }
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
                     let audioTemp: audioInterface[] = [...audioPath];
@@ -221,6 +236,17 @@ export default function Home() {
                     >
                     </Textarea>
                 </Flex>
+                {descriptionFlag != "block" &&
+                    <Flex pos={'absolute'} bottom={"100px"} right={"30px"} fontSize={"50px"} opacity={eraserOpacity}>
+                        <Tooltip label="クリア">
+                        <Link 
+                            onMouseEnter={() => setEraserOpacity("100%")} 
+                            onMouseLeave={() => setEraserOpacity("20%")}
+                            onClick={() => clear()}
+                        ><FaEraser /></Link>
+                        </Tooltip>
+                    </Flex>
+                }
             </Box>
         </>
     )
