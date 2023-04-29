@@ -11,8 +11,10 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 const EmailVerificationForm = () => {
+    const navigator = useNavigate()
     
     const email = useSelector((state: RootState) => state.userInfo.email)
     const [code, setCode] = useState("");
@@ -33,10 +35,7 @@ const EmailVerificationForm = () => {
                 email: email,
             }
         ).then((resp) => {
-            // let data = JSON.parse(resp.data)
-            console.log("asdfasdf",resp, resp.data)
-            localStorage.setItem("token", resp.data.access);
-            console.log(resp);
+            navigator("/login")
         }).catch((error) => {
             console.log(error)
         })
