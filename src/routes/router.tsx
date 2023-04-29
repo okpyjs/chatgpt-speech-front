@@ -9,6 +9,7 @@ import {
 import Home from "../pages/home"
 import SidebarWithHeader from "../layouts/sidebar";
 import Login from '../pages/register/Login';
+import EmailVerificationForm from '../pages/register/MailVerify';
 
 export const Router = () => (
     <BrowserRouter>
@@ -18,6 +19,7 @@ export const Router = () => (
             <Route path="/home" element={<Navigate to={"/"}/>}/>
             <Route path="/login" element={<Login name="login"/>}></Route>
             <Route path="/signup" element={<Login name="signup"/>}></Route>
+            <Route path="/mail-verify" element={<EmailVerificationForm />}></Route>
         </Routes>
     </BrowserRouter>
 )

@@ -21,9 +21,12 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from "react-redux";
+import { setUser } from '../../redux/userSlice'
 
 export default function Login({name}: {name: string}) {
     
+    const dispatch = useDispatch()
     const navigate = useNavigate()
 
     function handleEnter(e: any, name?: string) {
@@ -68,10 +71,12 @@ export default function Login({name}: {name: string}) {
             }
         ).then((resp) => {
             // let data = JSON.parse(resp.data)
-            console.log(resp, resp.data)
+            // console.log(resp, resp.data)
             localStorage.setItem("token", resp.data.access);
-            navigate("/login");
-            console.log(resp);
+            navigate("/mail-verify");
+            dispatch(setUser(email))
+            // console.log(resp);
+            
         }).catch((error) => {
             console.log(error)
         })
