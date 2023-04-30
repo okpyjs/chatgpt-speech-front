@@ -40,6 +40,8 @@ export default function Home() {
     const [chatDeep, setChatDeep] = useState<number>(3);
     const [eraserOpacity, setEraserOpacity] = useState<string>("20%");
     const [firstChatFlag, setFirstChatFlag] = useState<boolean>(true);
+    const [lastSystemChat, setLastSystemChat] = useState<string>();
+    const [letterWritingSpeed, setLetterWritingSpeed] = useState<number>(20);
     // const [audioModel, setAudioModel] = useState<string>('Nanami');
     // const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
@@ -49,8 +51,9 @@ export default function Home() {
 
     useEffect(() => {
         let chatArea = document.getElementById('chatArea');
+        console.log(chatArea?.scrollHeight)
         chatArea?.scrollBy(0, chatArea?.scrollHeight)
-    }, [userChatList, systemChatList])
+    }, [userChatList, systemChatList, lastSystemChat])
 
     async function delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -61,6 +64,7 @@ export default function Home() {
         setSystemChatList([])
         setFirstChatFlag(true)
         setAudioPath([])
+        textAreaRef.current?.focus()
     }
 
     function sendMessage(e: any) {
@@ -106,6 +110,13 @@ export default function Home() {
                     let temp: any[] = [...systemChatList];
                     temp.push({ 'role': 'system', 'content': resp.data['message']})
                     setSystemChatList(temp)
+                    let lastMsg = ""
+                    for(let i in resp.data["message"]) {
+                        delay(parseInt(i) * letterWritingSpeed).then(() => {
+                            lastMsg += resp.data["message"][i]
+                            setLastSystemChat(lastMsg)
+                        })
+                    }
                     let audioTemp: audioInterface[] = [...audioPath];
                     audioTemp.push({status: false, token: resp.data["audioToken"]})
                     setAudioPath(audioTemp)
@@ -203,7 +214,10 @@ export default function Home() {
                                                 justifySelf={'end'}
                                                 bg={systemChatBgColor}
                                             >
-                                                {systemChatList[i].content}
+                                                {i == systemChatList.length - 1 ?
+                                                    lastSystemChat:
+                                                    systemChatList[i].content
+                                                }
                                             </Text>
                                         </Flex>
                                         <Flex justify={'left'}>

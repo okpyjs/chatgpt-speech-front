@@ -41,13 +41,14 @@ import { useNavigate } from 'react-router-dom'
 interface LinkItemProps {
     name: string;
     icon: IconType;
+    link: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'ホーム', icon: FiHome },
-    { name: '学校の勉強', icon: FaSchool },
-    { name: '語学', icon: FaLanguage },
+    { name: 'ホーム', icon: FiHome, link: "/" },
+    { name: '学校の勉強', icon: FaSchool, link: "/school" },
+    { name: '語学', icon: FaLanguage, link: "/language" },
     // { name: 'お気に入り', icon: FiStar },
-    { name: '資格', icon: FaCertificate },
+    { name: '資格', icon: FaCertificate, link: "/certificate" },
 ];
 
 export default function SidebarWithHeader(
@@ -98,7 +99,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
 
     function signOut() {
         localStorage.removeItem("token")
-        navigate("/login")
+        navigate("/login", { replace: true})
     }
 
     return (
@@ -118,7 +119,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
+                <NavItem key={link.name} icon={link.icon} link={link.link}>
                     {link.name}
                 </NavItem>
             ))}
@@ -169,10 +170,19 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
 interface NavItemProps extends FlexProps {
     icon: IconType;
     children: ReactText;
+    link: string;
 }
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+    const navigate = useNavigate()
+
+    function handleClick(e: any, link: string) {
+        e.preventDefault();
+        console.log(link)
+        navigate(link, { replace: true})
+    }
+
     return (
-        <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+        <Link onClick={(e) => {handleClick(e, rest.link)}} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex
                 align="center"
                 p="4"
@@ -184,7 +194,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
                     bg: 'cyan.400',
                     color: 'white',
                 }}
-                {...rest}>
+                {...rest}
+            >
                 {icon && (
                     <Icon
                         mr="4"
