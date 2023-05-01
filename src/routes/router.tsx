@@ -23,6 +23,9 @@ export const Router = () => (
             <Route path="/school" element={<SidebarWithHeader children={"School"} name="school"/>}></Route>
             <Route path="/language" element={<SidebarWithHeader children={"Language"} name="language"/>}></Route>
             <Route path="/certificate" element={<SidebarWithHeader children={"Certificate"} name="certificate"/>}></Route>
+            <Route path="/profile" element={<SidebarWithHeader children={"Profile"} name="profile"/>}></Route>
+            <Route path="/setting" element={<SidebarWithHeader children={"Setting"} name="certificate"/>}></Route>
+            <Route path="/plan" element={<SidebarWithHeader children={"Plan"} name="plan"/>}></Route>
             {/* <Route path="*" element={<Navigate to={"/"}/>}></Route> */}
         </Routes>
     </BrowserRouter>

@@ -51,6 +51,17 @@ const LinkItems: Array<LinkItemProps> = [
     { name: '資格', icon: FaCertificate, link: "/certificate" },
 ];
 
+interface UserLinkItemProps {
+    name: string;
+    link: string;
+}
+
+const UserLinkItems: Array<UserLinkItemProps> = [
+    { name: "プロフィール", link: "/profile"},
+    { name: "設定", link: "/setting"},
+    { name: "請求する", link: "/plan"},
+]
+
 export default function SidebarWithHeader(
     {
         children,
@@ -99,7 +110,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
 
     function signOut() {
         localStorage.removeItem("token")
-        navigate("/login", { replace: true})
+        navigate("/login")
     }
 
     return (
@@ -155,9 +166,16 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                         //   bg={useColorModeValue('white', 'gray.900')}
                         //   borderColor={useColorModeValue('gray.200', 'gray.700')}
                     >
-                        <MenuItem>プロフィール</MenuItem>
+                        {UserLinkItems.map((item, index)=> {
+                            return (
+                                <>
+                                    <MenuItem onClick={() => navigate(item.link)}>{item.name}</MenuItem>
+                                </>
+                            )
+                        })}
+                        {/* <MenuItem>プロフィール</MenuItem>
                         <MenuItem>設定</MenuItem>
-                        <MenuItem>請求する</MenuItem>
+                        <MenuItem>請求する</MenuItem> */}
                         <MenuDivider />
                         <MenuItem onClick={() => {signOut()}}>サインアウト</MenuItem>
                     </MenuList>
@@ -178,7 +196,7 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
     function handleClick(e: any, link: string) {
         e.preventDefault();
         console.log(link)
-        navigate(link, { replace: true})
+        navigate(link)
     }
 
     return (
