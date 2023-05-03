@@ -51,19 +51,18 @@ export default function Home() {
 
     useEffect(() => {
         let chatArea = document.getElementById('chatArea');
-        console.log(chatArea?.scrollHeight)
         chatArea?.scrollBy(0, chatArea?.scrollHeight)
-    }, [userChatList, systemChatList, lastSystemChat])
+    }, [userChatList, systemChatList])
 
     async function delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function clear() {
-        setUserChatList([])
-        setSystemChatList([])
+        setUserChatList([...[]])
+        setSystemChatList([...[]])
         setFirstChatFlag(true)
-        setAudioPath([])
+        setAudioPath([...[]])
         textAreaRef.current?.focus()
     }
 
@@ -77,7 +76,7 @@ export default function Home() {
                 setDescriptionFlag("none");
                 let temp: any[] = [...userChatList];
                 temp.push({ 'role': 'user', 'content': userText });
-                setUserChatList(temp);
+                setUserChatList([...temp]);
                 setUserText("");
                 setTextAreaPos('0');
                 setDisableFlag(true);
@@ -105,11 +104,10 @@ export default function Home() {
                 ).then((resp) => {
                     console.log(resp.data)
                     setFirstChatFlag(false)
-                    setDisableFlag(false);
                     setLoading('メッセージを入力してください');
                     let temp: any[] = [...systemChatList];
                     temp.push({ 'role': 'system', 'content': resp.data['message']})
-                    setSystemChatList(temp)
+                    setSystemChatList([...temp])
                     let lastMsg = ""
                     for(let i in resp.data["message"]) {
                         delay(parseInt(i) * letterWritingSpeed).then(() => {
@@ -117,32 +115,48 @@ export default function Home() {
                             setLastSystemChat(lastMsg)
                         })
                     }
+                    delay((resp.data["message"].length - 1) * letterWritingSpeed).then(() => {
+                        setDisableFlag(false);
+                    })
                     let audioTemp: audioInterface[] = [...audioPath];
                     audioTemp.push({status: false, token: resp.data["audioToken"]})
                     setAudioPath(audioTemp)
-                    delay(30).then(() => {
+                    delay((resp.data["message"].length - 1) * letterWritingSpeed + 30).then(() => {
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
                         }
                     })
                 })
                 .catch((error) => {
-                    if(error.response.status == 401) {
-                        navigate('/login');
-                    }
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
-                    let audioTemp: audioInterface[] = [...audioPath];
-                    audioTemp.push({status: false, token: "error"})
-                    setAudioPath(audioTemp)
-                    delay(30).then(() => {
-                        let temp: any[] = [...systemChatList];
-                        temp.push({ 'role': 'system', 'content': '現在のGPTモデルはご利用いただけません。' })
-                        setSystemChatList(temp)
-                        if (textAreaRef.current) {
-                            textAreaRef.current.focus();
+                    if(error.message == "Network Error") {
+                        alert("ネットワークエラー")
+
+                    }else{
+                        if(error.response.status == 401) {
+                            navigate('/login');
                         }
-                    })
+                        let audioTemp: audioInterface[] = [...audioPath];
+                        audioTemp.push({status: false, token: "error"})
+                        setAudioPath(audioTemp)
+                        let errorMsg: any = '現在のGPTモデルはご利用いただけません。'
+                        let temp: any[] = [...systemChatList];
+                        temp.push({ 'role': 'system', 'content': errorMsg })
+                        setSystemChatList([...temp])
+                        let lastMsg = ""
+                        for(let i in errorMsg) {
+                            delay(parseInt(i) * letterWritingSpeed).then(() => {
+                                lastMsg += errorMsg[i]
+                                setLastSystemChat(lastMsg)
+                            })
+                        }
+                        delay((errorMsg.length - 1) * letterWritingSpeed).then(() => {
+                            if (textAreaRef.current) {
+                                textAreaRef.current.focus();
+                            }
+                        })
+                    }
                 })
             }
         }
@@ -199,6 +213,7 @@ export default function Home() {
                                         borderRadius={5}
                                         justifySelf={'end'}
                                         bg={userChatBgColor}
+                                        wordBreak={'break-word'}
                                     >
                                         {chat.content}
                                     </Text>
@@ -213,6 +228,7 @@ export default function Home() {
                                                 borderRadius={5}
                                                 justifySelf={'end'}
                                                 bg={systemChatBgColor}
+                                                wordBreak={'break-word'}
                                             >
                                                 {i == systemChatList.length - 1 ?
                                                     lastSystemChat:
@@ -221,7 +237,7 @@ export default function Home() {
                                             </Text>
                                         </Flex>
                                         <Flex justify={'left'}>
-                                            <audio controls style={{ height: '35px' }} autoPlay>
+                                            <audio controls style={{ height: '35px' }}>
                                                 <source src={`${process.env.REACT_APP_API_URL}/api/audio?token=${audioPath[i].token}`} type="audio/mp3" />
                                             </audio>
                                         </Flex>
