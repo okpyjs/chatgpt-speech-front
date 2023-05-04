@@ -213,7 +213,8 @@ export default function Home() {
                                         borderRadius={5}
                                         justifySelf={'end'}
                                         bg={userChatBgColor}
-                                        wordBreak={'break-word'}
+                                        whiteSpace={'pre-wrap'}
+                                        wordBreak={'break-all'}
                                     >
                                         {chat.content}
                                     </Text>
@@ -228,7 +229,8 @@ export default function Home() {
                                                 borderRadius={5}
                                                 justifySelf={'end'}
                                                 bg={systemChatBgColor}
-                                                wordBreak={'break-word'}
+                                                whiteSpace={'pre-wrap'}
+                                                wordBreak={'break-all'}
                                             >
                                                 {i == systemChatList.length - 1 ?
                                                     lastSystemChat:
