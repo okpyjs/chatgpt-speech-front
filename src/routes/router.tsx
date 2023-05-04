@@ -10,6 +10,7 @@ import Home from "../pages/home"
 import SidebarWithHeader from "../layouts/sidebar";
 import Login from '../pages/register/Login';
 import EmailVerificationForm from '../pages/register/MailVerify';
+import { Plan } from '../pages/plan';
 
 export const Router = () => (
     <BrowserRouter>
@@ -25,7 +26,7 @@ export const Router = () => (
             <Route path="/certificate" element={<SidebarWithHeader children={"Certificate"} name="certificate"/>}></Route>
             <Route path="/profile" element={<SidebarWithHeader children={"Profile"} name="profile"/>}></Route>
             <Route path="/setting" element={<SidebarWithHeader children={"Setting"} name="certificate"/>}></Route>
-            <Route path="/plan" element={<SidebarWithHeader children={"Plan"} name="plan"/>}></Route>
+            <Route path="/plan" element={<SidebarWithHeader children={<Plan />} name="plan"/>}></Route>
             {/* <Route path="*" element={<Navigate to={"/"}/>}></Route> */}
         </Routes>
     </BrowserRouter>
