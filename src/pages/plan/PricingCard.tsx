@@ -43,7 +43,7 @@ import {
             {price}
           </Heading>
           <Text fontWeight="inherit" fontSize="2xl">
-            / yr
+            / 年
           </Text>
         </Flex>
         <List spacing="4" mb="8" maxW="28ch" mx="auto">

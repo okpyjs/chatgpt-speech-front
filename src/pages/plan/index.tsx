@@ -11,7 +11,7 @@ export const Plan = () => (
     px={{ base: '4', md: '8' }}
   >
     <SimpleGrid
-      columns={{ base: 1, lg: 3 }}
+      columns={{ base: 1, lg: 2 }}
       spacing={{ base: '8', lg: '0' }}
       maxW="7xl"
       mx="auto"
@@ -20,58 +20,58 @@ export const Plan = () => (
     >
       <PricingCard
         data={{
-          price: '$29',
-          name: 'Application UI',
+          price:  '¥0',
+          name: '無料',
           features: [
-            'All application UI components',
-            'Lifetime access',
-            'Use on unlimited projects',
-            'Free Updates',
+            '1 日あたり 5 件のリクエスト',
+            // 'Lifetime access',
+            // 'Use on unlimited projects',
+            // 'Free Updates',
           ],
         }}
         icon={SiMicrosoft}
         button={
-          <ActionButton variant="outline" borderWidth="2px">
-            Buy now
+          <ActionButton variant="outline" borderWidth="2px" disabled={true}>
+            今すぐ購入
           </ActionButton>
         }
       />
       <PricingCard
         zIndex={1}
         isPopular
-        transform={{ lg: 'scale(1.05)' }}
+        // transform={{ lg: 'scale(1.05)' }}
         data={{
-          price: '$49',
-          name: 'Bundle',
+          price: '¥49',
+          name: 'プロ',
           features: [
-            'All application UI components',
-            'Lifetime access',
-            'Use on unlimited projects',
-            'Use on unlimited projects',
-            'Free Updates',
+            '1 日あたり 200 件のリクエスト',
+            // 'Lifetime access',
+            // 'Use on unlimited projects',
+            // 'Use on unlimited projects',
+            // 'Free Updates',
           ],
         }}
         icon={SiHive}
-        button={<ActionButton>Buy now</ActionButton>}
+        button={<ActionButton>今すぐ購入</ActionButton>}
       />
-      <PricingCard
+      {/* <PricingCard
         data={{
           price: '$29',
           name: 'Marketing UI',
           features: [
-            'All application UI components',
-            'Lifetime access',
-            'Use on unlimited projects',
-            'Free Updates',
+            // 'All application UI components',
+            // 'Lifetime access',
+            // 'Use on unlimited projects',
+            // 'Free Updates',
           ],
         }}
         icon={SiMarketo}
         button={
           <ActionButton variant="outline" borderWidth="2px">
-            Buy now
+            今すぐ購入
           </ActionButton>
         }
-      />
+      /> */}
     </SimpleGrid>
   </Box>
 )

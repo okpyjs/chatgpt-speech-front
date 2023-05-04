@@ -20,7 +20,7 @@ export const Card = (props: CardProps) => {
       width="100%"
       {...rest}
     >
-      {isPopular && <CardBadge>Popular</CardBadge>}
+      {isPopular && <CardBadge>人気</CardBadge>}
       {children}
     </Box>
   )
