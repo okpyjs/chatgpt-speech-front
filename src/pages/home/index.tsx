@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { FaEraser } from "react-icons/fa"
+import { useDispatch } from "react-redux";
+import { setModeDisable } from '../../redux/modeDisableSlice';
 
 export default function Home() {
     interface chatInterface {
@@ -24,6 +26,7 @@ export default function Home() {
         token: string;
     }
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const audioModel = useSelector((state: RootState) => state.audioMode.value)
     const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
     const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -73,6 +76,7 @@ export default function Home() {
             }
             e.preventDefault();
             if (userText.replace(/\s/g, '').length) {
+                dispatch(setModeDisable(true))
                 setDescriptionFlag("none");
                 let temp: any[] = [...userChatList];
                 temp.push({ 'role': 'user', 'content': userText });
@@ -124,6 +128,7 @@ export default function Home() {
                     delay((resp.data["message"].length - 1) * letterWritingSpeed + 30).then(() => {
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
+                            dispatch(setModeDisable(false))
                         }
                     })
                 })
@@ -154,6 +159,7 @@ export default function Home() {
                         delay((errorMsg.length - 1) * letterWritingSpeed).then(() => {
                             if (textAreaRef.current) {
                                 textAreaRef.current.focus();
+                                dispatch(setModeDisable(false))
                             }
                         })
                     }
