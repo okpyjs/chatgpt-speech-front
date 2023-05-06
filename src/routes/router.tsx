@@ -11,7 +11,7 @@ import SidebarWithHeader from "../layouts/sidebar";
 import Login from '../pages/register/Login';
 import EmailVerificationForm from '../pages/register/MailVerify';
 import { Plan } from '../pages/plan';
-// import UserProfile from '../pages/user';
+import UserProfileEdit from '../pages/user';
 
 export const Router = () => (
     <BrowserRouter>
@@ -25,7 +25,7 @@ export const Router = () => (
             <Route path="/school" element={<SidebarWithHeader children={"School"} name="school"/>}></Route>
             <Route path="/language" element={<SidebarWithHeader children={"Language"} name="language"/>}></Route>
             <Route path="/certificate" element={<SidebarWithHeader children={"Certificate"} name="certificate"/>}></Route>
-            {/* <Route path="/profile" element={<SidebarWithHeader children={<UserProfile name="abc" email="sg.pythondev@gmail.com" avatarUrl='error' />} name="profile"/>}></Route> */}
+            <Route path="/profile" element={<SidebarWithHeader children={<UserProfileEdit/>} name="profile"/>}></Route>
             <Route path="/setting" element={<SidebarWithHeader children={"Setting"} name="certificate"/>}></Route>
             <Route path="/plan" element={<SidebarWithHeader children={<Plan />} name="plan"/>}></Route>
             {/* <Route path="*" element={<Navigate to={"/"}/>}></Route> */}
