@@ -41,14 +41,26 @@ import { useNavigate } from 'react-router-dom'
 interface LinkItemProps {
     name: string;
     icon: IconType;
+    link: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'ホーム', icon: FiHome },
-    { name: '学校の勉強', icon: FaSchool },
-    { name: '語学', icon: FaLanguage },
+    { name: 'ホーム', icon: FiHome, link: "/" },
+    { name: '学校の勉強', icon: FaSchool, link: "/school" },
+    { name: '語学', icon: FaLanguage, link: "/language" },
     // { name: 'お気に入り', icon: FiStar },
-    { name: '資格', icon: FaCertificate },
+    { name: '資格', icon: FaCertificate, link: "/certificate" },
 ];
+
+interface UserLinkItemProps {
+    name: string;
+    link: string;
+}
+
+const UserLinkItems: Array<UserLinkItemProps> = [
+    { name: "プロフィール", link: "/profile"},
+    { name: "設定", link: "/setting"},
+    { name: "請求する", link: "/plan"},
+]
 
 export default function SidebarWithHeader(
     {
@@ -118,7 +130,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
+                <NavItem key={link.name} icon={link.icon} link={link.link}>
                     {link.name}
                 </NavItem>
             ))}
@@ -154,9 +166,14 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                         //   bg={useColorModeValue('white', 'gray.900')}
                         //   borderColor={useColorModeValue('gray.200', 'gray.700')}
                     >
-                        <MenuItem>プロフィール</MenuItem>
+                        {UserLinkItems.map((item, index)=> {
+                            return (
+                                <MenuItem key={index} onClick={() => navigate(item.link)}>{item.name}</MenuItem>
+                            )
+                        })}
+                        {/* <MenuItem>プロフィール</MenuItem>
                         <MenuItem>設定</MenuItem>
-                        <MenuItem>請求する</MenuItem>
+                        <MenuItem>請求する</MenuItem> */}
                         <MenuDivider />
                         <MenuItem onClick={() => {signOut()}}>サインアウト</MenuItem>
                     </MenuList>
@@ -169,10 +186,19 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
 interface NavItemProps extends FlexProps {
     icon: IconType;
     children: ReactText;
+    link: string;
 }
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+    const navigate = useNavigate()
+
+    function handleClick(e: any, link: string) {
+        e.preventDefault();
+        console.log(link)
+        navigate(link)
+    }
+
     return (
-        <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+        <Link onClick={(e) => {handleClick(e, rest.link)}} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex
                 align="center"
                 p="4"
@@ -184,7 +210,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
                     bg: 'cyan.400',
                     color: 'white',
                 }}
-                {...rest}>
+                {...rest}
+            >
                 {icon && (
                     <Icon
                         mr="4"
@@ -217,13 +244,15 @@ const MobileNav = ({onOpen, name, ...rest }: MobileProps) => {
         <Flex
             ml={{ base: 0, md: 60 }}
             px={{ base: 4, md: 4 }}
-            height="20"
+            height={name=="home" ? "20" : "0"}
             alignItems="center"
             bg={useColorModeValue('white', 'gray.900')}
-            borderBottomWidth="1px"
+            borderBottomWidth={name=="home" ? "1px" : ""}
+            display={name=="home" ? "flex" : "none"}
             borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
             justifyContent={{ base: 'space-between', md: 'flex-end' }}
-            {...rest}>
+            {...rest}
+        >
             <IconButton
                 display={{ base: 'flex', md: 'none' }}
                 onClick={onOpen}
@@ -239,7 +268,7 @@ const MobileNav = ({onOpen, name, ...rest }: MobileProps) => {
                 fontWeight="bold">
                 Parakeet
             </Text>
-            <HStack spacing={{ base: '0', md: '3' }}>
+            <HStack display="relative" spacing={{ base: '0', md: '3' }}>
                 <ColorModeSwitcher/>
                 <IconButton
                     size="lg"

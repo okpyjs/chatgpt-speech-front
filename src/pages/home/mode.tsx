@@ -13,6 +13,7 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { setAudioMode } from "../../redux/audioModeSlice";
 import { setChatMode } from "../../redux/chatModeSlice";
+import { setModeDisable } from "../../redux/modeDisableSlice";
 import styles from '../../assets/custom.module.css'
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
@@ -48,7 +49,8 @@ const itemList: ItemList = {
 
 const Mode = ({category}: {category: string}) => {
     const audioModel = useSelector((state: RootState) => state.audioMode.value)
-    const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
+    const chatModel = useSelector((state: RootState) => state.chatMode.value)
+    const modeDisable = useSelector((state: RootState) => state.modeDisable.value)
     const categoryBtnBg = useColorModeValue("gray.500", "gray.500");
     const dispatch = useDispatch()
 
@@ -60,7 +62,7 @@ const Mode = ({category}: {category: string}) => {
     return(
     <Box mr={2}>
         <Menu>
-            <MenuButton as={Button} bg={categoryBtnBg} fontSize={12} mr={2} className={category=="audio" ? styles.mode: "none"}>
+            <MenuButton as={Button} isDisabled={modeDisable} bg={categoryBtnBg} fontSize={12} mr={2} className={category=="audio" ? styles.mode: "none"}>
                 {
                     category == 'chat' &&
                         <>GPTモデル</>

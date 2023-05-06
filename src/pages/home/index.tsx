@@ -5,11 +5,16 @@ import {
     Flex,
     useColorModeValue,
     Textarea,
+    Link,
+    Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
+import { FaEraser } from "react-icons/fa"
+import { useDispatch } from "react-redux";
+import { setModeDisable } from '../../redux/modeDisableSlice';
 
 export default function Home() {
     interface chatInterface {
@@ -21,6 +26,7 @@ export default function Home() {
         token: string;
     }
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const audioModel = useSelector((state: RootState) => state.audioMode.value)
     const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
     const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -35,6 +41,10 @@ export default function Home() {
     const [textAreaPos, setTextAreaPos] = useState('auto');
     const [loading, setLoading] = useState('メッセージを入力してください');
     const [chatDeep, setChatDeep] = useState<number>(3);
+    const [eraserOpacity, setEraserOpacity] = useState<string>("20%");
+    const [firstChatFlag, setFirstChatFlag] = useState<boolean>(true);
+    const [lastSystemChat, setLastSystemChat] = useState<string>();
+    const [letterWritingSpeed, setLetterWritingSpeed] = useState<number>(20);
     // const [audioModel, setAudioModel] = useState<string>('Nanami');
     // const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
@@ -51,6 +61,14 @@ export default function Home() {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    function clear() {
+        setUserChatList([...[]])
+        setSystemChatList([...[]])
+        setFirstChatFlag(true)
+        setAudioPath([...[]])
+        textAreaRef.current?.focus()
+    }
+
     function sendMessage(e: any) {
         if (!e.shiftKey && e.key == "Enter") {
             if(localStorage.getItem('token') === null){
@@ -58,10 +76,11 @@ export default function Home() {
             }
             e.preventDefault();
             if (userText.replace(/\s/g, '').length) {
+                dispatch(setModeDisable(true))
                 setDescriptionFlag("none");
                 let temp: any[] = [...userChatList];
                 temp.push({ 'role': 'user', 'content': userText });
-                setUserChatList(temp);
+                setUserChatList([...temp]);
                 setUserText("");
                 setTextAreaPos('0');
                 setDisableFlag(true);
@@ -71,7 +90,8 @@ export default function Home() {
                     user_message: JSON.stringify(temp.slice(0-chatDeep)), 
                     system_message: JSON.stringify([...systemChatList].slice(0-chatDeep)), 
                     audio_model: audioModel,
-                    chat_model: chatModel
+                    chat_model: chatModel,
+                    first_chat: firstChatFlag
                 }
                 console.log(data)
 
@@ -87,36 +107,62 @@ export default function Home() {
                     }
                 ).then((resp) => {
                     console.log(resp.data)
-                    setDisableFlag(false);
+                    setFirstChatFlag(false)
                     setLoading('メッセージを入力してください');
                     let temp: any[] = [...systemChatList];
                     temp.push({ 'role': 'system', 'content': resp.data['message']})
-                    setSystemChatList(temp)
+                    setSystemChatList([...temp])
+                    let lastMsg = ""
+                    for(let i in resp.data["message"]) {
+                        delay(parseInt(i) * letterWritingSpeed).then(() => {
+                            lastMsg += resp.data["message"][i]
+                            setLastSystemChat(lastMsg)
+                        })
+                    }
+                    delay((resp.data["message"].length - 1) * letterWritingSpeed).then(() => {
+                        setDisableFlag(false);
+                    })
                     let audioTemp: audioInterface[] = [...audioPath];
                     audioTemp.push({status: false, token: resp.data["audioToken"]})
                     setAudioPath(audioTemp)
-                    delay(30).then(() => {
+                    delay((resp.data["message"].length - 1) * letterWritingSpeed + 30).then(() => {
                         if (textAreaRef.current) {
                             textAreaRef.current.focus();
+                            dispatch(setModeDisable(false))
                         }
                     })
                 })
                 .catch((error) => {
-                    console.log(error)
-                    navigate('/login');
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
-                    let audioTemp: audioInterface[] = [...audioPath];
-                    audioTemp.push({status: false, token: "error"})
-                    setAudioPath(audioTemp)
-                    delay(30).then(() => {
-                        let temp: any[] = [...systemChatList];
-                        temp.push({ 'role': 'system', 'content': '現在のGPTモデルはご利用いただけません。' })
-                        setSystemChatList(temp)
-                        if (textAreaRef.current) {
-                            textAreaRef.current.focus();
+                    if(error.message == "Network Error") {
+                        alert("ネットワークエラー")
+
+                    }else{
+                        if(error.response.status == 401) {
+                            navigate('/login');
                         }
-                    })
+                        let audioTemp: audioInterface[] = [...audioPath];
+                        audioTemp.push({status: false, token: "error"})
+                        setAudioPath(audioTemp)
+                        let errorMsg: any = '現在のGPTモデルはご利用いただけません。'
+                        let temp: any[] = [...systemChatList];
+                        temp.push({ 'role': 'system', 'content': errorMsg })
+                        setSystemChatList([...temp])
+                        let lastMsg = ""
+                        for(let i in errorMsg) {
+                            delay(parseInt(i) * letterWritingSpeed).then(() => {
+                                lastMsg += errorMsg[i]
+                                setLastSystemChat(lastMsg)
+                            })
+                        }
+                        delay((errorMsg.length - 1) * letterWritingSpeed).then(() => {
+                            if (textAreaRef.current) {
+                                textAreaRef.current.focus();
+                                dispatch(setModeDisable(false))
+                            }
+                        })
+                    }
                 })
             }
         }
@@ -173,6 +219,8 @@ export default function Home() {
                                         borderRadius={5}
                                         justifySelf={'end'}
                                         bg={userChatBgColor}
+                                        whiteSpace={'pre-wrap'}
+                                        wordBreak={'break-all'}
                                     >
                                         {chat.content}
                                     </Text>
@@ -187,12 +235,17 @@ export default function Home() {
                                                 borderRadius={5}
                                                 justifySelf={'end'}
                                                 bg={systemChatBgColor}
+                                                whiteSpace={'pre-wrap'}
+                                                wordBreak={'break-all'}
                                             >
-                                                {systemChatList[i].content}
+                                                {i == systemChatList.length - 1 ?
+                                                    lastSystemChat:
+                                                    systemChatList[i].content
+                                                }
                                             </Text>
                                         </Flex>
                                         <Flex justify={'left'}>
-                                            <audio controls style={{ height: '35px' }} autoPlay>
+                                            <audio controls style={{ height: '35px' }}>
                                                 <source src={`${process.env.REACT_APP_API_URL}/api/audio?token=${audioPath[i].token}`} type="audio/mp3" />
                                             </audio>
                                         </Flex>
@@ -221,6 +274,17 @@ export default function Home() {
                     >
                     </Textarea>
                 </Flex>
+                {descriptionFlag != "block" &&
+                    <Flex pos={'absolute'} bottom={"100px"} right={"30px"} fontSize={"50px"} opacity={eraserOpacity}>
+                        <Tooltip label="クリア">
+                        <Link 
+                            onMouseEnter={() => setEraserOpacity("100%")} 
+                            onMouseLeave={() => setEraserOpacity("20%")}
+                            onClick={() => clear()}
+                        ><FaEraser /></Link>
+                        </Tooltip>
+                    </Flex>
+                }
             </Box>
         </>
     )
