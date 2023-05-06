@@ -4,7 +4,7 @@ import {
     Button,
     FormControl,
     Flex,
-    Input,
+    Link,
     Stack,
     useColorModeValue,
     HStack,
@@ -129,6 +129,9 @@ export default function EmailVerificationForm(): JSX.Element {
                     >
                         ベリファイ
                     </Button>
+                </Stack>
+                <Stack spacing={6} align={'center'}>
+                    <Link>再送</Link>
                 </Stack>
             </Stack>
         </Flex>
