@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { Center, Heading } from '@chakra-ui/react';
 import {
-    FormControl,
-    FormLabel,
-    Input,
     Button,
+    FormControl,
     Flex,
-    Box,
-    Text,
-} from "@chakra-ui/react";
+    Input,
+    Stack,
+    useColorModeValue,
+    HStack,
+} from '@chakra-ui/react';
+import { PinInput, PinInputField } from '@chakra-ui/react';
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 
-const EmailVerificationForm = () => {
+
+export default function EmailVerificationForm(): JSX.Element {
     const navigator = useNavigate()
     
     const email = useSelector((state: RootState) => state.userInfo.email)
@@ -40,33 +43,60 @@ const EmailVerificationForm = () => {
             console.log(error)
         })
     }
-
     return (
-        <Box>
-            <Flex justify={"center"} mb={5}>
-                <Text mt={"40vh"}>We sent the verify code to your mail</Text>
-            </Flex>
-            <Flex justify={'center'}>
-                <Input
-                    type="number"
-                    // placeholder="Enter your email"
-                    // value={email}
-                    onChange={(event) => setCode(event.target.value)}
-                    width={"150px"}
-                />
-            </Flex>
-            <Flex justify={'center'}>
-                <Button type="submit" mt={4} color={"lightblue"} onClick={() => submitCode()}>
-                    Verify
-                </Button>
-            </Flex>
-                {/* {isSubmitted && (
-                    <Text mt={4} color="green.500">
-                        Verification email has been sent!
-                    </Text>
-                )} */}
-        </Box>
+        <Flex
+            minH={'100vh'}
+            align={'center'}
+            justify={'center'}
+            bg={useColorModeValue('gray.50', 'gray.800')}>
+            <Stack
+                spacing={4}
+                w={'full'}
+                maxW={'sm'}
+                bg={useColorModeValue('white', 'gray.700')}
+                rounded={'xl'}
+                boxShadow={'lg'}
+                p={6}
+                my={10}>
+                <Center>
+                    <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+                        Verify your Email
+                    </Heading>
+                </Center>
+                <Center
+                    fontSize={{ base: 'sm', sm: 'md' }}
+                    color={useColorModeValue('gray.800', 'gray.400')}>
+                    We have sent code to your email
+                </Center>
+                <Center
+                    fontSize={{ base: 'sm', sm: 'md' }}
+                    fontWeight="bold"
+                    color={useColorModeValue('gray.800', 'gray.400')}>
+                    username@mail.com
+                </Center>
+                <FormControl>
+                    <Center>
+                        <HStack>
+                            <PinInput>
+                                <PinInputField />
+                                <PinInputField />
+                                <PinInputField />
+                                <PinInputField />
+                            </PinInput>
+                        </HStack>
+                    </Center>
+                </FormControl>
+                <Stack spacing={6}>
+                    <Button
+                        bg={'blue.400'}
+                        color={'white'}
+                        _hover={{
+                            bg: 'blue.500',
+                        }}>
+                        Verify
+                    </Button>
+                </Stack>
+            </Stack>
+        </Flex>
     );
-};
-
-export default EmailVerificationForm;
+}
