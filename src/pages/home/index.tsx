@@ -7,6 +7,7 @@ import {
     Textarea,
     Link,
     Tooltip,
+    useToast
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useSelector } from "react-redux";
@@ -26,9 +27,10 @@ export default function Home() {
         token: string;
     }
     const navigate = useNavigate();
-    const dispatch = useDispatch()
-    const audioModel = useSelector((state: RootState) => state.audioMode.value)
-    const chatModel = useSelector((statte: RootState) => statte.chatMode.value)
+    const dispatch = useDispatch();
+    const toast = useToast();
+    const audioModel = useSelector((state: RootState) => state.audioMode.value);
+    const chatModel = useSelector((statte: RootState) => statte.chatMode.value);
     const textAreaRef = useRef<HTMLTextAreaElement>();
     const userChatBgColor = useColorModeValue("gray.500", "gray.500");
     const systemChatBgColor = useColorModeValue("gray.100", "gray.700");
@@ -49,8 +51,8 @@ export default function Home() {
     // const [chatModel, setChatModel] = useState<string>('gpt-3.5-turbo');
 
     useEffect(() => {
-        textAreaRef.current?.focus()
-    }, [])
+        textAreaRef.current?.focus();
+    }, []);
 
     useEffect(() => {
         let chatArea = document.getElementById('chatArea');
@@ -62,11 +64,11 @@ export default function Home() {
     }
 
     function clear() {
-        setUserChatList([...[]])
-        setSystemChatList([...[]])
-        setFirstChatFlag(true)
-        setAudioPath([...[]])
-        textAreaRef.current?.focus()
+        setUserChatList([...[]]);
+        setSystemChatList([...[]]);
+        setFirstChatFlag(true);
+        setAudioPath([...[]]);
+        textAreaRef.current?.focus();
     }
 
     function sendMessage(e: any) {
@@ -93,7 +95,7 @@ export default function Home() {
                     chat_model: chatModel,
                     first_chat: firstChatFlag
                 }
-                console.log(data)
+                console.log(data);
 
                 const headers = {
                     'Content-Type': 'application/json',
@@ -136,8 +138,14 @@ export default function Home() {
                     setDisableFlag(false);
                     setLoading('メッセージを入力してください');
                     if(error.message == "Network Error") {
-                        alert("ネットワークエラー")
-
+                        toast({
+                            title: 'ネットワークエラー',
+                            // description: "We've created your account for you.",
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true,
+                            position: 'top-right'
+                        })
                     }else{
                         if(error.response.status == 401) {
                             navigate('/login');
@@ -161,9 +169,9 @@ export default function Home() {
                                 textAreaRef.current.focus();
                                 dispatch(setModeDisable(false))
                             }
-                        })
+                        });
                     }
-                })
+                });
             }
         }
     }
