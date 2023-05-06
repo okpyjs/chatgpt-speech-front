@@ -14,9 +14,13 @@ import {
     Center,
 } from '@chakra-ui/react';
 import { SmallCloseIcon } from '@chakra-ui/icons';
+import { useState } from 'react';
 
 
 export default function UserProfileEdit(): JSX.Element {
+
+    const [editStatus, setEditStatus] = useState<boolean>(false)
+
     return (
         <Flex
             minH={'100vh'}
@@ -34,30 +38,35 @@ export default function UserProfileEdit(): JSX.Element {
                 p={6}
                 my={12}>
                 <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-                    User Profile Edit
+                    {editStatus?
+                        "User Profile Edit":
+                        "User Profile"
+                    }
                 </Heading>
-                <FormControl id="userName">
+                <FormControl id="avatar">
                     <FormLabel>User Icon</FormLabel>
                     <Stack direction={['column', 'row']} spacing={6}>
                         <Center>
-                            <Avatar size="xl" src="https://bit.ly/sage-adebayo">
-                                <AvatarBadge
-                                    as={IconButton}
-                                    size="sm"
-                                    rounded="full"
-                                    top="-10px"
-                                    colorScheme="red"
-                                    aria-label="remove Image"
-                                    icon={<SmallCloseIcon />}
-                                />
+                            <Avatar size="xl" src="https://static.deepl.com/img/logo/DeepL_Logo_darkBlue_v2.svg">
+                                {editStatus&&
+                                    <AvatarBadge
+                                        as={IconButton}
+                                        size="sm"
+                                        rounded="full"
+                                        top="-10px"
+                                        colorScheme="red"
+                                        aria-label="remove Image"
+                                        icon={<SmallCloseIcon />}
+                                    />
+                                }
                             </Avatar>
                         </Center>
                         <Center w="full">
-                            <Button w="full">Change Icon</Button>
+                            <Button w="full" isDisabled={!editStatus}>Change Icon</Button>
                         </Center>
                     </Stack>
                 </FormControl>
-                <FormControl id="userName" isRequired>
+                <FormControl id="userName" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
                     <FormLabel>User name</FormLabel>
                     <Input
                         placeholder="UserName"
@@ -65,7 +74,7 @@ export default function UserProfileEdit(): JSX.Element {
                         type="text"
                     />
                 </FormControl>
-                <FormControl id="email" isRequired>
+                <FormControl id="email" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
                     <FormLabel>Email address</FormLabel>
                     <Input
                         placeholder="your-email@example.com"
@@ -73,14 +82,34 @@ export default function UserProfileEdit(): JSX.Element {
                         type="email"
                     />
                 </FormControl>
-                <FormControl id="password" isRequired>
-                    <FormLabel>Password</FormLabel>
+                <FormControl id="old_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormLabel>Old Password</FormLabel>
                     <Input
                         placeholder="password"
                         _placeholder={{ color: 'gray.500' }}
                         type="password"
                     />
                 </FormControl>
+                {editStatus&&
+                    <>
+                    <FormControl id="new_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                        <FormLabel>New Password</FormLabel>
+                        <Input
+                            placeholder="password"
+                            _placeholder={{ color: 'gray.500' }}
+                            type="password"
+                        />
+                    </FormControl>
+                    <FormControl id="re_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                        <FormLabel>New Password Again</FormLabel>
+                        <Input
+                            placeholder="password"
+                            _placeholder={{ color: 'gray.500' }}
+                            type="password"
+                        />
+                    </FormControl>
+                    </>
+                }
                 <Stack spacing={6} direction={['column', 'row']}>
                     <Button
                         bg={'red.400'}
@@ -88,7 +117,10 @@ export default function UserProfileEdit(): JSX.Element {
                         w="full"
                         _hover={{
                             bg: 'red.500',
-                        }}>
+                        }}
+                        isDisabled={!editStatus}
+                        onClick={() => {setEditStatus(false)}}
+                    >
                         Cancel
                     </Button>
                     <Button
@@ -97,8 +129,16 @@ export default function UserProfileEdit(): JSX.Element {
                         w="full"
                         _hover={{
                             bg: 'blue.500',
-                        }}>
-                        Submit
+                        }}
+                        onClick={() => {
+                            if(editStatus) setEditStatus(false)
+                            else setEditStatus(true)
+                        }}
+                    >
+                        {editStatus?
+                            "Confirm":
+                            "Edit"
+                        }
                     </Button>
                 </Stack>
             </Stack>

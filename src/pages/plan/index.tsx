@@ -9,6 +9,7 @@ export const Plan = () => (
     // bg={useColorModeValue('gray.50', 'gray.800')}
     py="14"
     px={{ base: '4', md: '8' }}
+    mt={"40px"}
   >
     <SimpleGrid
       columns={{ base: 1, lg: 2 }}
