@@ -130,7 +130,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon} link={link.link}>
+                <NavItem key={link.name} icon={link.icon} link={link.link} onClick={onClose}>
                     {link.name}
                 </NavItem>
             ))}
@@ -244,11 +244,11 @@ const MobileNav = ({onOpen, name, ...rest }: MobileProps) => {
         <Flex
             ml={{ base: 0, md: 60 }}
             px={{ base: 4, md: 4 }}
-            height={name=="home" ? "20" : "0"}
+            height={"20"}
             alignItems="center"
             bg={useColorModeValue('white', 'gray.900')}
-            borderBottomWidth={name=="home" ? "1px" : ""}
-            display={name=="home" ? "flex" : "none"}
+            borderBottomWidth={"1px"}
+            // display={name=="home" ? "flex" : "none"}
             borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
             justifyContent={{ base: 'space-between', md: 'flex-end' }}
             {...rest}
