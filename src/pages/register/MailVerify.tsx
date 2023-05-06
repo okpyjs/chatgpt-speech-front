@@ -9,7 +9,7 @@ import {
     useColorModeValue,
     HStack,
 } from '@chakra-ui/react';
-import { PinInput, PinInputField } from '@chakra-ui/react';
+import { PinInput, PinInputField, useToast } from '@chakra-ui/react';
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
@@ -18,9 +18,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function EmailVerificationForm(): JSX.Element {
     const navigator = useNavigate()
+    const toast = useToast()
     
     const email = useSelector((state: RootState) => state.userInfo.email)
-    const [code, setCode] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -31,6 +31,22 @@ export default function EmailVerificationForm(): JSX.Element {
 
     const submitCode = () => {
         console.log(email)
+        let code: string = ""
+        for(let i = 0; i < 6; i ++){
+            let input: any = document.querySelector(`#verify_code-${i}`)
+            code += input.value
+        }
+        if(code.length < 6) {
+            toast({
+                title: '正しいコードを入力',
+                // description: "We've created your account for you.",
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
+            return
+        }
+        console.log(code)
         axios.post(
             `${process.env.REACT_APP_API_URL}/api/mail-verify/`,
             {
@@ -39,8 +55,22 @@ export default function EmailVerificationForm(): JSX.Element {
             }
         ).then((resp) => {
             navigator("/login")
+            toast({
+                title: 'メール確認済み',
+                // description: "We've created your account for you.",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            })
         }).catch((error) => {
             console.log(error)
+            toast({
+                title: 'コードエラー',
+                // description: "We've created your account for you.",
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            })
         })
     }
     return (
@@ -60,24 +90,26 @@ export default function EmailVerificationForm(): JSX.Element {
                 my={10}>
                 <Center>
                     <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-                        Verify your Email
+                        メールアドレスの認証
                     </Heading>
                 </Center>
                 <Center
                     fontSize={{ base: 'sm', sm: 'md' }}
                     color={useColorModeValue('gray.800', 'gray.400')}>
-                    We have sent code to your email
+                    あなたのメールにコードを送信しました
                 </Center>
                 <Center
                     fontSize={{ base: 'sm', sm: 'md' }}
                     fontWeight="bold"
                     color={useColorModeValue('gray.800', 'gray.400')}>
-                    username@mail.com
+                    {email}
                 </Center>
                 <FormControl>
                     <Center>
                         <HStack>
-                            <PinInput>
+                            <PinInput id='verify_code'>
+                                <PinInputField />
+                                <PinInputField />
                                 <PinInputField />
                                 <PinInputField />
                                 <PinInputField />
@@ -92,8 +124,10 @@ export default function EmailVerificationForm(): JSX.Element {
                         color={'white'}
                         _hover={{
                             bg: 'blue.500',
-                        }}>
-                        Verify
+                        }}
+                        onClick={() => { submitCode() }}
+                    >
+                        ベリファイ
                     </Button>
                 </Stack>
             </Stack>
