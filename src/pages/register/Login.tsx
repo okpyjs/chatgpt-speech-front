@@ -51,6 +51,7 @@ export default function Login({name}: {name: string}) {
             // let data = JSON.parse(resp.data)
             console.log(resp, resp.data)
             localStorage.setItem("token", resp.data.token);
+            localStorage.setItem("email", email);
             navigate("/home");
             console.log(resp);
         }).catch((error) => {

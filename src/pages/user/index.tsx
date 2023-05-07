@@ -14,18 +14,59 @@ import {
     Center,
 } from '@chakra-ui/react';
 import { SmallCloseIcon } from '@chakra-ui/icons';
-import { useState } from 'react';
-
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserProfileEdit(): JSX.Element {
 
-    const [editStatus, setEditStatus] = useState<boolean>(false)
+    const [editStatus, setEditStatus] = useState<boolean>(false);
+    const [userName, setUserName] = useState<string>("");
+    const [email, setEamil] = useState<string>("");
+    const [avatar, setAvatar] = useState<string>("https://static.deepl.com/img/logo/DeepL_Logo_darkBlue_v2.svg");
+    const [oldPsw, setOldPsw] = useState<string>("");
+    const [newPsw, setNewPsw] = useState<string>("");
+    const [reNewPsw, setReNewPsw] = useState<string>("");
+    const navigator = useNavigate();
+
+    useEffect(() => {
+        const email = localStorage.getItem("email")
+        console.log(email, "################")
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+        const data = {
+            email: email
+        }
+        axios.post(
+            `${process.env.REACT_APP_API_URL}/api/userinfo/`,
+            data,
+            {headers: headers}
+        ).then((resp) => {
+            console.log(resp.data)
+        }).catch((error) => {
+            console.log(error)
+            navigator("/login")
+        })
+    }, [])
+
+    function changeUserInfo() {
+        axios.post(
+            `${process.env.REACT_APP_API_URL}/api/change-userinfo/`
+        )
+        setEditStatus(false)
+    }
 
     return (
         <Flex
             minH={'100vh'}
             align={'center'}
             justify={'center'}
+            position={'relative'}
+            top={"-30px"}
             // bg={useColorModeValue('gray.50', 'gray.800')}
         >
             <Stack
@@ -39,15 +80,15 @@ export default function UserProfileEdit(): JSX.Element {
                 my={12}>
                 <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
                     {editStatus?
-                        "User Profile Edit":
-                        "User Profile"
+                        "ユーザー プロフィールの編集":
+                        "ユーザー プロファイル"
                     }
                 </Heading>
-                <FormControl id="avatar">
-                    <FormLabel>User Icon</FormLabel>
+                <FormControl>
+                    <FormLabel>ユーザーアイコン</FormLabel>
                     <Stack direction={['column', 'row']} spacing={6}>
                         <Center>
-                            <Avatar size="xl" src="https://static.deepl.com/img/logo/DeepL_Logo_darkBlue_v2.svg">
+                            <Avatar size="xl" src={avatar}>
                                 {editStatus&&
                                     <AvatarBadge
                                         as={IconButton}
@@ -62,50 +103,63 @@ export default function UserProfileEdit(): JSX.Element {
                             </Avatar>
                         </Center>
                         <Center w="full">
-                            <Button w="full" isDisabled={!editStatus}>Change Icon</Button>
+                            <Button w="full" isDisabled={!editStatus}>アイコンの変更</Button>
                         </Center>
                     </Stack>
                 </FormControl>
-                <FormControl id="userName" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
-                    <FormLabel>User name</FormLabel>
+                <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormLabel>ユーザー名</FormLabel>
                     <Input
-                        placeholder="UserName"
+                        placeholder="ユーザー名"
+                        autoComplete='off'
                         _placeholder={{ color: 'gray.500' }}
                         type="text"
+                        value={userName}
+                        onChange={(e) => {setUserName(e.target.value)}}
                     />
                 </FormControl>
-                <FormControl id="email" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
-                    <FormLabel>Email address</FormLabel>
+                <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormLabel>メールアドレス</FormLabel>
                     <Input
                         placeholder="your-email@example.com"
                         _placeholder={{ color: 'gray.500' }}
                         type="email"
-                    />
-                </FormControl>
-                <FormControl id="old_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
-                    <FormLabel>Old Password</FormLabel>
-                    <Input
-                        placeholder="password"
-                        _placeholder={{ color: 'gray.500' }}
-                        type="password"
+                        autoComplete="off"
+                        value={email}
+                        onChange={(e) => {setEamil(e.target.value)}}
                     />
                 </FormControl>
                 {editStatus&&
                     <>
-                    <FormControl id="new_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
-                        <FormLabel>New Password</FormLabel>
+                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                        <FormLabel>以前のパスワード</FormLabel>
                         <Input
-                            placeholder="password"
+                            autoComplete="off"
+                            placeholder="以前のパスワード"
                             _placeholder={{ color: 'gray.500' }}
                             type="password"
+                            value={oldPsw}
+                            onChange={(e) => {setOldPsw(e.target.value)}}
                         />
                     </FormControl>
-                    <FormControl id="re_password" isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
-                        <FormLabel>New Password Again</FormLabel>
+                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                        <FormLabel>新しいパスワード</FormLabel>
                         <Input
-                            placeholder="password"
+                            placeholder="新しいパスワード"
                             _placeholder={{ color: 'gray.500' }}
                             type="password"
+                            value={newPsw}
+                            onChange={(e) => {setNewPsw(e.target.value)}}
+                        />
+                    </FormControl>
+                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                        <FormLabel>新しいパスワードを再入力</FormLabel>
+                        <Input
+                            placeholder="新しいパスワードを再入力"
+                            _placeholder={{ color: 'gray.500' }}
+                            type="password"
+                            value={reNewPsw}
+                            onChange={(e) => {setReNewPsw(e.target.value)}}
                         />
                     </FormControl>
                     </>
@@ -121,7 +175,7 @@ export default function UserProfileEdit(): JSX.Element {
                         isDisabled={!editStatus}
                         onClick={() => {setEditStatus(false)}}
                     >
-                        Cancel
+                        取消
                     </Button>
                     <Button
                         bg={'blue.400'}
@@ -131,13 +185,13 @@ export default function UserProfileEdit(): JSX.Element {
                             bg: 'blue.500',
                         }}
                         onClick={() => {
-                            if(editStatus) setEditStatus(false)
+                            if(editStatus) {changeUserInfo()}
                             else setEditStatus(true)
                         }}
                     >
                         {editStatus?
-                            "Confirm":
-                            "Edit"
+                            "確認":
+                            "編集"
                         }
                     </Button>
                 </Stack>
