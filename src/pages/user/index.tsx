@@ -12,6 +12,7 @@ import {
     AvatarBadge,
     IconButton,
     Center,
+    useToast,
 } from '@chakra-ui/react';
 import { SmallCloseIcon } from '@chakra-ui/icons';
 import { useEffect, useRef, useState } from 'react';
@@ -22,10 +23,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function UserProfileEdit(): JSX.Element {
 
+    const toast = useToast()
+
     const [editStatus, setEditStatus] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>("");
     const [email, setEamil] = useState<string>("");
     const [avatar, setAvatar] = useState<string>("https://static.deepl.com/img/logo/DeepL_Logo_darkBlue_v2.svg");
+    const [image, setImage] = useState<File | null>(null);
     const [oldPsw, setOldPsw] = useState<string>("");
     const [newPsw, setNewPsw] = useState<string>("");
     const [reNewPsw, setReNewPsw] = useState<string>("");
@@ -33,7 +37,6 @@ export default function UserProfileEdit(): JSX.Element {
 
     useEffect(() => {
         const email = localStorage.getItem("email")
-        console.log(email, "################")
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -47,6 +50,8 @@ export default function UserProfileEdit(): JSX.Element {
             {headers: headers}
         ).then((resp) => {
             console.log(resp.data)
+            setUserName(resp.data.username)
+            setEamil(resp.data.email)
         }).catch((error) => {
             console.log(error)
             navigator("/login")
@@ -54,10 +59,28 @@ export default function UserProfileEdit(): JSX.Element {
     }, [])
 
     function changeUserInfo() {
+        // if(newPsw == "" || newPsw != reNewPsw){
+        //     toast({
+        //         title: 'パスワードを正確に入力してください。',
+        //         // description: "We've created your account for you.",
+        //         status: 'error',
+        //         duration: 3000,
+        //         isClosable: true,
+        //         // position: 'top-right'
+        //     })
+        //     return
+        // }
         axios.post(
             `${process.env.REACT_APP_API_URL}/api/change-userinfo/`
         )
         setEditStatus(false)
+    }
+
+    function handleImageChange(e: any) {
+        if (e.target.files && e.target.files.length > 0) {
+            console.log(e.target.files[0]);
+            setImage(e.target.files[0]);
+        }
     }
 
     return (
@@ -88,7 +111,7 @@ export default function UserProfileEdit(): JSX.Element {
                     <FormLabel>ユーザーアイコン</FormLabel>
                     <Stack direction={['column', 'row']} spacing={6}>
                         <Center>
-                            <Avatar size="xl" src={avatar}>
+                            <Avatar size="xl" src={avatar} onChange={(e) => {handleImageChange(e)}}>
                                 {editStatus&&
                                     <AvatarBadge
                                         as={IconButton}
@@ -118,7 +141,7 @@ export default function UserProfileEdit(): JSX.Element {
                         onChange={(e) => {setUserName(e.target.value)}}
                     />
                 </FormControl>
-                <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                <FormControl isRequired={!editStatus ? false: true} isDisabled={true}>
                     <FormLabel>メールアドレス</FormLabel>
                     <Input
                         placeholder="your-email@example.com"
@@ -129,9 +152,9 @@ export default function UserProfileEdit(): JSX.Element {
                         onChange={(e) => {setEamil(e.target.value)}}
                     />
                 </FormControl>
-                {editStatus&&
+                {/* {editPswStatus&&
                     <>
-                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormControl isRequired={!editPswStatus ? false: true} isDisabled={!editPswStatus}>
                         <FormLabel>以前のパスワード</FormLabel>
                         <Input
                             autoComplete="off"
@@ -142,7 +165,7 @@ export default function UserProfileEdit(): JSX.Element {
                             onChange={(e) => {setOldPsw(e.target.value)}}
                         />
                     </FormControl>
-                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormControl isRequired={!editPswStatus ? false: true} isDisabled={!editPswStatus}>
                         <FormLabel>新しいパスワード</FormLabel>
                         <Input
                             placeholder="新しいパスワード"
@@ -152,7 +175,7 @@ export default function UserProfileEdit(): JSX.Element {
                             onChange={(e) => {setNewPsw(e.target.value)}}
                         />
                     </FormControl>
-                    <FormControl isRequired={!editStatus ? false: true} isDisabled={!editStatus}>
+                    <FormControl isRequired={!editPswStatus ? false: true} isDisabled={!editPswStatus}>
                         <FormLabel>新しいパスワードを再入力</FormLabel>
                         <Input
                             placeholder="新しいパスワードを再入力"
@@ -163,7 +186,7 @@ export default function UserProfileEdit(): JSX.Element {
                         />
                     </FormControl>
                     </>
-                }
+                } */}
                 <Stack spacing={6} direction={['column', 'row']}>
                     <Button
                         bg={'red.400'}
