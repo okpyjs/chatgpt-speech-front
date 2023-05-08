@@ -168,7 +168,7 @@ const SidebarContent = ({ onClose, name, ...rest }: SidebarProps) => {
                     >
                         {UserLinkItems.map((item, index)=> {
                             return (
-                                <MenuItem key={index} onClick={() => navigate(item.link)}>{item.name}</MenuItem>
+                                <MenuItem key={index} onClick={() => {navigate(item.link); onClose()}}>{item.name}</MenuItem>
                             )
                         })}
                         {/* <MenuItem>プロフィール</MenuItem>
